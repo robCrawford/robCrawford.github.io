@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title> Animation </title>
+<style type="text/css">
+body{
+	font: 12px sans-serif;
+}
+#wrapper{
+	margin-top: 20px;
+	width: 1000px;
+	background: #ddd;
+}
+#quit-btn{
+	float: left;
+	background: #ccc;
+	padding: 5px 10px;
+	margin-top: 20px;
+	margin-right: 10px;
+	cursor: pointer;
+}
+#anim-btn{
+	float: left;
+	background: #0cf;
+	padding: 5px 10px;
+	margin-top: 20px;
+	cursor: pointer;
+}
+.bar{
+	background: #666;
+	width: 100px;
+	padding: 5px 0;
+	margin-bottom: 10px;
+	color: #fff;
+}
+</style>
+<script type="text/javascript" src="js-anim.js"></script>
+
+<script type="text/javascript">
+window.onload = function(){
+
+	var animBtn = document.getElementById("anim-btn"),
+		quitBtn = document.getElementById("quit-btn"),
+		div1 = document.getElementById("div1"),
+		div2 = document.getElementById("div2"),
+		div3 = document.getElementById("div3"),
+		animDirection = 1;
+
+	animBtn.onclick = function(){
+	//Toggle animation direction
+		if(animDirection == 1){
+			animDirection = -1;
+			animForward();
+		}
+		else{
+			animDirection = 1;
+			animBack();
+		}
+	}
+
+	function animForward(){
+		animate(div1, "width", 1000, 1000, "", function(){animEnd(div1)}); //No easing
+		animate(div1, "opacity", 0.3, 1);
+		animate(div2, "width", 1000, 1000, "in", function(){animEnd(div2)}); //Ease in
+		animate(div2, "opacity", 0.3, 1);
+		animate(div3, "width", 1000, 1000, "out", function(){animEnd(div3)}); //Ease out
+		animate(div3, "opacity", 0.3, 1);
+	}
+
+	function animBack(){
+		animate(div1, "width", 100, 1000);
+		animate(div1, "opacity", 1, 1);
+		animate(div2, "width", 100, 1000, "in");
+		animate(div2, "opacity", 1, 1);
+		animate(div3, "width", 100, 1000, "out");
+		animate(div3, "opacity", 1, 1);
+	}
+
+	function animEnd(el){
+	//End of anim callback
+		el.style.color = "#000";
+		setTimeout(function(){
+			el.style.color = "#fff";
+		}, 500)
+	}
+	
+	quitBtn.onclick = function(){
+	//Quit all anims
+		quitAnims(div1);
+		quitAnims(div2);
+		quitAnims(div3);
+	}
+}
+</script>
+</head>
+<body>
+
+	<div id="wrapper">
+		<div style="width: 100px;" id="div1" class="bar">&nbsp; No easing</div>
+		<div style="width: 100px;" id="div2" class="bar">&nbsp; Ease in</div>	
+		<div style="width: 100px;" id="div3" class="bar">&nbsp; Ease out</div>
+	</div>
+
+	<div id="quit-btn">Click to stop anims</div>
+	<div id="anim-btn">Click to toggle anim direction</div>
+
+</body>
+</html>

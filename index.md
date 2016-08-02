@@ -3,25 +3,9 @@ layout: default
 title: Home
 ---
 
-Welcome
--------
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+Github         |
+-------------- |
+[es6-app](demos/es6-app/) |
+[Slickgrid timesheet (static)](demos/slickgrid-timesheet-static-demo/) |
+[js-anim](demos/js-anim/) |
 
-{% highlight javascript %}
-
-    var str = 'Hello world!';
-
-{% endhighlight %}
-
-
-Name           | Description
--------------- | -------------
-Hello          | A greeting
-World          | A place
-
-
-### Posts 
-
-{% for post in site.posts %}
-> [ {{ post.title }} ]( {{ post.url }} )
-{% endfor %}
