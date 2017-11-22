@@ -1,16 +1,19 @@
 html {
   font: 12px sans-serif;
+  max-width: 500px;
 }
-input {
+label {
   display: block;
-  margin: 2px 0 10px;
-}
-div {
   margin: 2px;
 }
-#userModel,
-#userForm {
-  display: inline-block;
+input,
+textarea {
+  display: block;
+  margin: 2px 0 10px;
+  width: 90%;
+}
+div {
+  display: block;
   padding: 10px;
   background: #ddd;
   border-radius: 5px;
