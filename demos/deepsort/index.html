@@ -3,13 +3,178 @@
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
-<title> Test </title>
+<title> Deep sort </title>
+<style>
+h1 {
+    font: 26px sans-serif;
+    margin: 20px 7px 0;
+    color: #444;
+}
+form {
+    width: 600px;
+}
+#input {
+    width: 594px;
+    height: 300px;
+}
+.copying #input {
+    border: 1px solid #d70;
+}
+.error #input {
+    border: 1px solid red;
+    background-color: #ffdddd;
+}
+#result {
+    display: inline-block;
+    padding: 12px;
+    line-height: 1.4em;
+    background: #eee;
+    border: 1px solid #ddd;
+    margin: 5px 0 50px;
+}
+#result:empty {
+   display: none;
+}
+.error #result {
+    border: 1px solid red;
+    background-color: #ffdddd;
+}
+button {
+    float: right;
+    display: block;
+    position: relative;
+    top: -6px;
+    margin: 0 0 0 4px;
+}
+.copying #copy {
+    background-color: #d70;
+    border: 2px solid #d70;
+    color: #fff;
+}
+.formatting #strip {
+    background-color: 1px solid #44ac24;
+    border: 2px solid #44ac24;
+    color: #fff;
+}
+#output {
+    position: absolute;
+    left: -9999px;
+}
+code {
+    font-size: 12px;
+    vertical-align: text-top;
+}
+</style>
+<script>
+function isPlainObject(o) {
+    return o === Object(o) &&
+           !o.nodeType &&
+           !Array.isArray(o) &&
+           !(typeof o === 'function') &&
+           !(o instanceof RegExp);
+}
+function defaultSortFn(a, b) {
+    return a.localeCompare(b);
+}
+function sort(src, comparator) {
+    var out;
+    if (Array.isArray(src)) {
+        return src.map(function (item) {
+            return sort(item, comparator);
+        });
+    }
+    if (isPlainObject(src)) {
+        out = {};
 
+        Object.keys(src).sort(comparator || defaultSortFn).forEach(function (key) {
+            out[key] = sort(src[key], comparator);
+        });
+
+        return out;
+    }
+    return src;
+}
+function setFormClass(className) {
+    document.getElementById('form').className = className;
+}
+function displayParsedInput(v) {
+    var resultStr = '';
+    try {
+        if (v) {
+            eval('window.userInput = ' + v);
+            resultStr = JSON.stringify(sort(userInput), null, 4);
+            setFormClass('');
+        }
+    }
+    catch(e) {
+        if (v) {
+            resultStr = 'Error: Cannot parse input';
+            setFormClass('error');
+        }
+    }
+    document.getElementById("result").innerText = resultStr;
+}
+function copyToClipboard() {
+    var outputEl = document.getElementById('output');
+    var prevClassName = document.body.className;
+    document.body.className = 'copying';
+    outputEl.value = document.getElementById("result").innerText;
+    outputEl.select();
+    document.execCommand('copy');
+    revertUi(prevClassName);
+};
+function stripReturns() {
+    var inputEl = document.getElementById('input');
+    var prevClassName = document.body.className;
+    document.body.className = 'formatting';
+    var strippedStr = inputEl.value = inputEl.value.replace(/\r?\n|\r/g, '');
+    displayParsedInput(strippedStr);
+    revertUi(prevClassName);
+}
+function revertUi(prevClassName) {
+    setTimeout(function() {
+        document.body.className = prevClassName;
+        document.getElementById('input').focus();
+    }, 100);
+}
+var ctrlDown = false;
+document.addEventListener('keyup', function(e) {
+    switch (e.keyCode) {
+        case 17: { // Ctrl
+            ctrlDown = false;
+            break;
+        }
+        case 27: { // Esc
+            stripReturns();
+            break;
+        }
+        case 13: { // Return
+            if (ctrlDown) {
+                copyToClipboard();
+            }
+            break;
+        }
+    }
+    var inputEl = document.getElementById('input');
+    displayParsedInput(inputEl.value);
+});
+document.addEventListener('keydown', function(e) {
+    if (e.keyCode === 17) { // Ctrl
+        ctrlDown = true;
+    }
+});
+</script>
 </head>
 <body>
 
-  Deepsort
-
+<h1>Deep sort</h1>
+<form id="form">
+    <button id="copy" type="button" onclick="copyToClipboard()"> Copy result <code>[ctrl+enter]</code> </button>
+    <button id="strip" type="button" onclick="stripReturns()"> Strip line breaks <code>[esc]</code> </button>
+    <textarea id="input" autofocus placeholder="{}"></textarea>
+    <textarea id='output' readonly></textarea>
+</form>
+<pre id="result"></pre>
 
 </body>
 </html>
