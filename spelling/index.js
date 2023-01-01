@@ -11,7 +11,7 @@
   };
 
   const year2 = [
-    'about', 'above', 'after', 'again', 'although', 'always', 'another', 'ask', 'asked', 'baby', 'because', 'before', 'behind', 'between', 'both', 'call', 'called', 'children', 'climb', 'could', 'different', "don't", 'even', 'ever', 'every', 'everyone', 'everything', 'father', 'finally', 'friends', 'great', 'help', 'hide', 'house', "i'm", 'know', 'large', 'last', 'little', 'looked', 'love', 'many', 'most', 'mother', 'Mr', 'Mrs', 'need', 'next', 'oh', 'once', 'only', 'other', 'our', 'over', 'people', 'please', 'really', 'school', 'should', 'small', 'suddenly', 'these', 'things', 'think', 'those', 'thought', 'thorough', 'time', 'together', 'under', 'until', 'very', 'where', 'which', 'work', 'would', 'year', 'young', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
+    'about', 'above', 'after', 'again', 'although', 'always', 'another', 'ask', 'asked', 'baby', 'because', 'before', 'behind', 'between', 'both', 'call', 'called', 'children', 'climb', 'could', 'different', 'even', 'ever', 'every', 'everyone', 'everything', 'father', 'finally', 'friends', 'great', 'help', 'hide', 'house', "i'm", 'know', 'large', 'last', 'little', 'looked', 'love', 'many', 'most', 'mother', 'Mr', 'Mrs', 'need', 'next', 'oh', 'once', 'only', 'other', 'our', 'over', 'people', 'please', 'really', 'school', 'should', 'small', 'suddenly', 'these', 'things', 'think', 'those', 'thought', 'thorough', 'time', 'together', 'under', 'until', 'very', 'where', 'which', 'work', 'would', 'year', 'young', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   const year3 = [
@@ -53,10 +53,9 @@
         if (countEntry >= config.hintCount) {
           fnHandle[word] = 0;
           const input = $(`#${wordToId(word)}`);
-          input.placeholder = word;
-          setTimeout(() => {
-            input.placeholder = '';
-          }, 300);
+          input.value = '';
+          setTimeout(() => { input.value = word }, 500);
+          setTimeout(() => { input.value = '' }, 800);
         }
       }
     } else {
@@ -71,9 +70,15 @@
   window.updateResults = () => {
     const isComplete = words.reduce((allCorrect, word) => {
       const input = $(`#${wordToId(word)}`);
-      const isCorrect = input?.value.trim() === word;
+      const answer = input?.value.trim();
+      const isCorrect = answer === word;
       if (input.value) {
         input.className = isCorrect ? 'correct' : 'incorrect';
+        if (!isCorrect && word.toLowerCase() === answer) {
+          const prevValue = input.value;
+          setTimeout(() => { input.value = word; }, 500);
+          setTimeout(() => { input.value = prevValue; }, 800);
+        }
       }
       return allCorrect && isCorrect;
     }, true);
@@ -85,7 +90,7 @@
       })
       localStorage.setItem(config.stateName, JSON.stringify(spellingState));
 
-      $('#complete-overlay').innerHTML = '<img src="https://i.giphy.com/media/7frSUXgbGqQPKNnJRS/giphy.webp" onclick="clearComplete()" />'
+      $('#complete-overlay').style.display = 'block';
       window.speak("Awesome job! Wop wop wop wop wop wop wop wop wop wop wop wop");
       setTimeout(clearComplete, 5000);
     }
@@ -103,8 +108,21 @@
 
   const resultsHtml = Object.entries(spellingState).map(([word, count]) => `<div class="results-word"><h3>${word}</h3><span>${count}</span></div>`).join('');
 
-  $('#form-fields').innerHTML = (fieldsHtml);
-  $('#results').innerHTML = (resultsHtml);
+  $('#form-fields').innerHTML = fieldsHtml;
+  $('#results').innerHTML = resultsHtml;
+
+  $('#results-link').onclick = () => {
+    updateResultsUI(true);
+  };
+  $('#results-title').onclick = () => {
+    updateResultsUI(false);
+  };
+
+  function updateResultsUI(showResults) {
+    $('#results-title').style.display = showResults ? 'block' : 'none';
+    $('#results').style.display = showResults ? 'flex' : 'none';
+    $('#results-link').style.display = showResults ? 'none' : 'block';
+  }
 
   document.addEventListener("keyup", e => {
     if(e.key === 'Enter') {
@@ -115,11 +133,5 @@
   document.addEventListener('contextmenu', e => {
     e.preventDefault();
   });
-
-  if (/results/i.test(location.search)) {
-    $('#results-title').style.display = 'block';
-    $('#results').style.display = 'flex';
-    $('#results-link').style.display = 'none';
-  }
 
 }());
