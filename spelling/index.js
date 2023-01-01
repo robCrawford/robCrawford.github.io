@@ -1,17 +1,21 @@
 (function() {
   const $ = selector => document.querySelector(selector);
+  window.scrollTo(0, 0);
 
   let completed = false;
 
   const config = {
     stateName: 'spelling-state',
     fieldCount: 10,
-    completedCount: 5,
-    hintCount: 5
+    completedWordCount: 5,
+    hintCount: 5,
+    completedFieldsReward: .5,
   };
 
+  const helpHtml = `<p>Completing all ${config.fieldCount} words earns ${config.completedFieldsReward.toFixed(2)} points!</p><p>A word hint will be shown in the field if you need to click repeat ${config.hintCount} times.</p>`;
+
   const year2 = [
-    'about', 'above', 'after', 'again', 'although', 'always', 'another', 'ask', 'asked', 'baby', 'because', 'before', 'behind', 'between', 'both', 'call', 'called', 'children', 'climb', 'could', 'different', 'even', 'ever', 'every', 'everyone', 'everything', 'father', 'finally', 'friends', 'great', 'help', 'hide', 'house', "i'm", 'know', 'large', 'last', 'little', 'looked', 'love', 'many', 'most', 'mother', 'Mr', 'Mrs', 'need', 'next', 'oh', 'once', 'only', 'other', 'our', 'over', 'people', 'please', 'really', 'school', 'should', 'small', 'suddenly', 'these', 'things', 'think', 'those', 'thought', 'thorough', 'time', 'together', 'under', 'until', 'very', 'where', 'which', 'work', 'would', 'year', 'young', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
+    'about', 'above', 'after', 'again', 'although', 'always', 'another', 'ask', 'asked', 'baby', 'because', 'before', 'behind', 'between', 'both', 'call', 'called', 'children', 'climb', 'could', 'different', 'even', 'ever', 'every', 'everyone', 'everything', 'father', 'finally', 'friends', 'great', 'help', 'hide', 'house', 'know', 'large', 'last', 'little', 'looked', 'love', 'many', 'most', 'mother', 'Mr', 'Mrs', 'need', 'next', 'oh', 'once', 'only', 'other', 'our', 'over', 'people', 'please', 'really', 'school', 'should', 'small', 'suddenly', 'these', 'things', 'think', 'those', 'thought', 'thorough', 'time', 'together', 'under', 'until', 'very', 'where', 'which', 'work', 'would', 'year', 'young', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   const year3 = [
@@ -24,7 +28,11 @@
 
   const allWords = [...year2, ...year3, ...year4];
   const spellingState = JSON.parse(localStorage.getItem(config.stateName) || '{}');
-  const incompleteWords = allWords.filter(word => !((spellingState[word] || 0) >= config.completedCount));
+  const incompleteWords = allWords.filter(word => !((spellingState[word] || 0) >= config.completedWordCount));
+
+  // Rewards
+  const completedFieldsCount = Object.values(spellingState).reduce((acc, count) => acc + count, 0) / config.fieldCount;
+  const rewardAmount = `🌟 ${(completedFieldsCount * config.completedFieldsReward).toFixed(2)}`;
 
   let shuffledWords = incompleteWords
     .map(value => ({ value, sort: Math.random() }))
@@ -34,10 +42,13 @@
   const words = shuffledWords.slice(0, config.fieldCount);
 
   if (!words.length) {
-    $('#title').innerHTML = "Congratulations 😊 <div>You have learned every word!! 😊😊😊</div>";
+    $('#title').innerHTML = "Congratulations!<div class='complete-message'>You have learned every word 😊😊😊</div>";
+    $('#rewards').style.top = 0;
+    $('#help-icon').style.display = 'none';
+    updateResultsUI(true, true);
   }
 
-  const wordToId = word => word.replace(/[^\w]/g, '');
+  const wordToId = word => `_${word.replace(/[^\w]/g, '')}_`;
 
   window.speak = (word, isRepeat) => {
     if ('speechSynthesis' in window) {
@@ -71,14 +82,15 @@
     const isComplete = words.reduce((allCorrect, word) => {
       const input = $(`#${wordToId(word)}`);
       const answer = input?.value.trim();
-      const isCorrect = answer === word;
+      let isCorrect = answer === word;
+
       if (input.value) {
-        input.className = isCorrect ? 'correct' : 'incorrect';
-        if (!isCorrect && word.toLowerCase() === answer) {
-          const prevValue = input.value;
-          setTimeout(() => { input.value = word; }, 500);
-          setTimeout(() => { input.value = prevValue; }, 800);
+        // Auto correct case
+        if (!isCorrect && answer.toLowerCase() === word.toLowerCase()) {
+          input.value = word;
+          isCorrect = true;
         }
+        input.className = isCorrect ? 'correct' : 'incorrect';
       }
       return allCorrect && isCorrect;
     }, true);
@@ -99,18 +111,19 @@
   const fieldsHtml = words.map((word, i) =>
     `<div class="field"><input id="${
       wordToId(word)
-    }" type="text" onfocus="speak('${
+    }" type="text" autocorrect="off" autocapitalize="off" onfocus="speak('${
       word
-    }')" onblur="updateResults()" /><span class="repeat" onclick="speak('${
+    }')" onblur="updateResults()" /><span title="repeat" class="repeat" onclick="speak('${
       word
     }', true)">↻</span></div>`
   ).join('');
 
-  const resultsHtml = Object.entries(spellingState).map(([word, count]) => `<div class="results-word"><h3>${word}</h3><span>${count}</span></div>`).join('');
+  const resultsHtml = Object.entries(spellingState).map(([word, count]) => `<div class="results-word${count >= config.completedWordCount ? ' completed-word' : ''}"><h3>${word}</h3><span>${count}</span></div>`).join('');
 
   $('#form-fields').innerHTML = fieldsHtml;
   $('#results').innerHTML = resultsHtml;
-
+  $('#rewards').innerHTML = rewardAmount;
+  $('#help-text').innerHTML = helpHtml;
   $('#results-link').onclick = () => {
     updateResultsUI(true);
   };
@@ -118,8 +131,8 @@
     updateResultsUI(false);
   };
 
-  function updateResultsUI(showResults) {
-    $('#results-title').style.display = showResults ? 'block' : 'none';
+  function updateResultsUI(showResults, hideTitle) {
+    $('#results-title').style.display = showResults && !hideTitle ? 'block' : 'none';
     $('#results').style.display = showResults ? 'flex' : 'none';
     $('#results-link').style.display = showResults ? 'none' : 'block';
   }

@@ -1,3 +1,12 @@
+@keyframes bounce {
+  0%   { transform: scale(1,1)      translateY(0); }
+  10%  { transform: scale(1.1,.9)   translateY(0); }
+  30%  { transform: scale(.9,1.1)   translateY(-150px); }
+  50%  { transform: scale(1.05,.95) translateY(0); }
+  57%  { transform: scale(1,1)      translateY(-7px); }
+  64%  { transform: scale(1,1)      translateY(0); }
+  100% { transform: scale(1,1)      translateY(0); }
+}
 body {
   position: relative;
   height: 100vh;
@@ -13,13 +22,27 @@ body {
   margin: 0 auto;
   padding: 20px;
   background: #999;
-  min-height: 90%;
 }
 h1 {
+  display: inline-block;
   font-size: 50px;
   font-weight: normal;
   color: white;
-  margin: 30px 20px;
+  margin: 30px 10px 30px 20px;
+}
+#help-icon {
+  display: inline-block;
+  font-size: 50px;
+}
+#rewards {
+  float: right;
+  position: absolute;
+  top: 50px;
+  right: 45px;
+  font-size: 30px;
+  line-height: 75px;
+  color: white;
+  animation: bounce 0.6s ease-out 1;
 }
 a {
   color: white;
@@ -32,6 +55,7 @@ a {
   right: 0;
   top: 0;
   bottom: 0;
+  z-index: 10;
   min-height: 100%;
   background: url("img/sloth.webp");
   background-color: #222;
@@ -39,11 +63,6 @@ a {
   background-repeat: no-repeat;
   background-position: center center;
   cursor: pointer;
-}
-@media only screen and (max-width: 600px) {
-  #complete-overlay {
-    background-size: cover;
-  }
 }
 #complete-overlay img {
   width: 100%;
@@ -54,15 +73,15 @@ a {
 }
 .field {
   cursor: pointer;
-  padding: 20px;
+  padding: 10px 0 10px 35px;
   margin-bottom: 5px;
-  max-width: 90%;
+  width: 44%;
 }
 .field input {
   font-size: 30px;
   padding: 5px;
   border: 5px solid #999;
-  max-width: 74%;
+  width: 74%;
 }
 .field input.correct {
   color: green;
@@ -75,17 +94,19 @@ a {
 .repeat {
   font-size: 50px;
   color: white;
-  padding: 0 10px;
+  padding: 0 0 0 10px;
 }
 #results-link {
   cursor: pointer;
   color: white;
   font-size: 13px;
+  margin: 23px 20px 20px;
 }
 #results-title {
   display: none;
   font-weight: normal;
   color: white;
+  margin: 20px;
 }
 #results-title span {
   cursor: pointer;
@@ -95,6 +116,7 @@ a {
 #results {
   display: none;
   flex-wrap: wrap;
+  padding: 0 20px;
 }
 .results-word {
   background: white;
@@ -102,6 +124,10 @@ a {
   border-radius: 10px;
   margin-right: 10px;
   margin-bottom: 10px;
+}
+.results-word.completed-word {
+  background: green;
+  color: white;
 }
 .results-word h3 {
   display: inline-block;
@@ -111,4 +137,75 @@ a {
 .results-word span {
   display: inline-block;
   padding: 0 10px;
+}
+.complete-message {
+  margin-bottom: 30px;
+}
+
+.tooltip {
+  cursor: pointer;
+  position:relative;
+}
+.tooltip .balloon {
+  min-width:200px;
+  top:56px;
+  left:50%;
+  transform:translate(-50%, 0);
+  padding:10px 20px;
+  color:#666666;
+  background-color:#EEEEEE;
+  font-weight:normal;
+  font-size:13px;
+  border-radius:8px;
+  position:absolute;
+  z-index:1;
+  box-sizing:border-box;
+  box-shadow:0 1px 8px rgba(0,0,0,0.5);
+  display:none;
+}
+.tooltip .balloon p {
+  padding: 0;
+  margin: 0 0 5px;
+}
+.tooltip:hover .balloon {
+  display:block;
+}
+.tooltip .balloon i {
+  position:absolute;
+  bottom:100%;
+  left:50%;
+  margin-left:-12px;
+  width:24px;
+  height:12px;
+  overflow:hidden;
+}
+.tooltip .balloon i::after {
+  content:'';
+  position:absolute;
+  width:12px;
+  height:12px;
+  left:50%;
+  transform:translate(-50%,50%) rotate(45deg);
+  background-color:#EEEEEE;
+  box-shadow:0 1px 8px rgba(0,0,0,0.5);
+}
+
+@media only screen and (max-width: 630px) {
+  #help-icon {
+    display: none;
+  }
+  h1 {
+    font-size: 45px;
+  }
+  #rewards {
+    line-height: 67px;
+    right: 35px;
+  }
+  #complete-overlay {
+    background-size: cover;
+  }
+  .field {
+    width: 90%;
+    padding-left: 20px;
+  }
 }
