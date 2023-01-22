@@ -140,6 +140,9 @@
       const repeatEl = $(`#${wordToId(word)} + .repeat`);
       repeatEl.onclick = () => speak(word, true);
     });
+    $('#help-icon').ontouchend = () => {
+      $('.tooltip .balloon').classList.toggle('show');
+    };
 
     // Retest word
     Object.keys(spellingState).forEach((word) => {
