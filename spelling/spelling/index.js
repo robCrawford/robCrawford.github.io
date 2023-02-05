@@ -89,7 +89,7 @@ export function initSpelling() {
   const resultsHtml = Object.entries(spellingState).map(([word, count]) => {
     const displayWord = /~/.test(word) ? `<s>${word.split('~')[0]}</s>` : word;
     return `<div class="results-word${count >= spellingConfig.completedWordCount ? ' completed-word' : ''}"><h3 id="result-${wordToId(word)}">${displayWord}</h3><span>${count}</span></div>`
-}).join('');
+  }).join('');
 
   // DOM elements
   setTimeout(() => {

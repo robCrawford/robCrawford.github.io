@@ -13,6 +13,10 @@ export function wordToId(word) {
   return `_${word.replace(/[^\w]/g, '')}_`;
 }
 
+export function sentenceToId(sentence) {
+  return `_${sentence.replace(/[^\w]/g, '')}_`;
+}
+
 export function clearComplete() {
   setTimeout(() => { location.reload(); }, 1000);
 }
@@ -40,3 +44,5 @@ export function speak(word, isRepeat) {
     alert("Sorry, your browser doesn't support speech synthesis!");
   }
 }
+
+export const pluralise = (word) => `${word}${word === 'six' ? 'es' : 's'}`;

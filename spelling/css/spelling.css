@@ -1,0 +1,59 @@
+#form-fields {
+  display: flex;
+  flex-wrap: wrap;
+}
+.field {
+  cursor: pointer;
+  padding: 10px 0 10px 35px;
+  margin-bottom: 5px;
+  width: 44%;
+}
+.field input {
+  font-size: 30px;
+  padding: 5px;
+  border: 5px solid rgb(165, 163, 147);
+  width: 74%;
+}
+.field input.correct {
+  color: green;
+  border: 5px solid green;
+}
+.field input.incorrect {
+  color: red;
+  border: 5px solid red;
+}
+.repeat {
+  font-size: 50px;
+  color: white;
+  padding: 0 0 0 10px;
+  cursor: pointer;
+}
+
+.results-word {
+  background: white;
+  color: green;
+  border-radius: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.results-word.completed-word {
+  background: green;
+  color: white;
+}
+.results-word h3 {
+  display: inline-block;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: crosshair;
+}
+.results-word span {
+  display: inline-block;
+  padding: 0 10px;
+}
+
+@media only screen and (max-width: 630px) {
+  .field {
+    width: 90%;
+    padding-left: 20px;
+  }
+}

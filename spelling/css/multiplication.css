@@ -1,0 +1,83 @@
+#form-fields {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  padding-right: 15px;
+}
+.repeat {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  font-size: 50px;
+  line-height: 45px;
+  color: white;
+  padding: 0 0 0 10px;
+  cursor: pointer;
+}
+.field {
+  position: relative;
+  width: 100%;
+  height: 108px;
+  background-color: rgb(85, 83, 68);
+  margin-bottom: 10px;
+}
+.field input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 60px;
+  font-size: 30px;
+  padding: 5px;
+  border: 5px solid rgb(85, 83, 68);
+  cursor: default;
+}
+.field input.correct {
+  color: green;
+  border: 5px solid green;
+}
+.field input.incorrect {
+  color: red;
+  border: 5px solid red;
+}
+.number-buttons {
+  position: absolute;
+  top: 53px;
+  left: 5px;
+  right: 75px;
+  display: flex;
+  justify-content: space-between;
+}
+.number-button {
+  display: block;
+  width: 50px;
+  height: 50px;
+  color: white;
+  text-align: center;
+  line-height: 50px;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 1px;
+}
+
+.results-sentence {
+  background: white;
+  color: green;
+  border-radius: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.results-sentence.completed-sentence {
+  background: green;
+  color: white;
+}
+.results-sentence h3 {
+  display: inline-block;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: crosshair;
+}
+.results-sentence span {
+  display: inline-block;
+  padding: 0 10px;
+}
