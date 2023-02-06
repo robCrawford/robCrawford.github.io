@@ -3,7 +3,7 @@ import data from './data.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
-  fieldCount: 10,
+  fieldCount: 14,
   completedWordCount: 5,
   hintCount: 5,
   completedFieldsReward: .5,

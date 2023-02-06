@@ -3,12 +3,12 @@ import data, { numberWords } from './data.js';
 
 export const multiplicationConfig = {
   stateName: 'multiplication-state',
-  testCount: 12,
-  completedTestCount: 10,
+  testCount: 20,
+  completedTestCount: 12,
   completedTestReward: .5,
 };
 
-// Entries here will be the only tables tested
+// Entries here will be the only tables tested e.g. ["2 x 2 = 4", "3 x 2 = 6"]
 let tempOverrideTables = [];
 
 const helpHtml = `<p>Completing all ${multiplicationConfig.testCount} tests earns ${multiplicationConfig.completedTestReward.toFixed(2)} points!</p>`;
@@ -42,7 +42,7 @@ export function initMultiplication() {
   const tables = shuffledTables.slice(0, multiplicationConfig.testCount);
 
   if (!tables.length) {
-    $('#title').innerHTML = "Congratulations!<div class='complete-message'>You have completed every test 😊😊😊</div>";
+    $('#title').innerHTML = "Congratulations!<div class='complete-message'>You have completed every test 😊😊</div>";
     $('#rewards').style.top = 0;
     $('#help-icon').style.display = 'none';
     updateResultsUI(true, true);
@@ -83,14 +83,14 @@ export function initMultiplication() {
   const getNumberUI = (sentenceId) => {
     let ui = '<div class="number-buttons">';
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach((i) => {
-      ui += `<div class="number-button" id="${sentenceId}-${i}">${i}</div>`;
+      ui += `<div class="number-button paused" id="${sentenceId}-${i}">${i}</div>`;
     });
     return `${ui}</div>`;
   }
 
   const fieldsHtml = tables.map((sentence, i) => {
     const sentenceId = sentenceToId(sentence);
-    return `<div class="field"><input id="${sentenceId}" type="text" autocorrect="off" autocapitalize="off" readonly /><span title="repeat" class="repeat">↻</span>${getNumberUI(sentenceId)}</div>`;
+    return `<div class="field"><input id="${sentenceId}" class="paused" type="text" autocorrect="off" autocapitalize="off" readonly /><span title="repeat" class="repeat">↻</span>${getNumberUI(sentenceId)}</div>`;
   }).join('');;
 
   const resultsHtml = Object.entries(multiplicationState).map(([sentence, count]) => {
@@ -101,6 +101,7 @@ export function initMultiplication() {
   // DOM elements
   setTimeout(() => {
     tables.forEach((sentence) => {
+      let paused = true;
       const sentenceId = sentenceToId(sentence);
 
       const answerArr = sentence.replace(/\s?[x=]\s?/g, '|').split('|');
@@ -114,8 +115,18 @@ export function initMultiplication() {
 
       const input = $(`#${sentenceId}`);
       input.progress = 0;
-      input.onfocus = () => speak(verbalPhrase);
+      input.onfocus = () => {
+        paused = false;
+        speak(verbalPhrase);
+        input.placeholder = '';
+        input.classList.remove('paused');
+        for (let i = 0; i < 10; i++) {
+          const numberButton = $(`#${sentenceId}-${i}`);
+          numberButton.classList.remove('paused');
+        }
+      }
       input.onblur = () => updateResults();
+      input.placeholder = sentence.replace(/=.+/, '= 🤔');
 
       const clearInput = () => {
         input.value = '';
@@ -141,7 +152,7 @@ export function initMultiplication() {
       for (let i = 0; i < 10; i++) {
         const numberButton = $(`#${sentenceId}-${i}`);
         numberButton.onclick = () => {
-          if (input.progress === 3) {
+          if (paused || input.progress === 3) {
             return;
           }
 
@@ -209,7 +220,7 @@ export function initMultiplication() {
     updateResultsUI(false);
   };
   $('#title').ondblclick = () => {
-    const overrides = prompt('Tables override list (comma separated, leave empty to clear!)', storedOverrides);
+    const overrides = prompt('Tables override list e.g. "2 x 2 = 4,3 x 2 = 6" (leave empty to clear!)', storedOverrides);
     if (overrides !== null) { // Cancel
       if (overrides) {
         localStorage.setItem(overridesKey, overrides);
