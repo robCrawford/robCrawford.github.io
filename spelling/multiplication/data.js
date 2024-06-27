@@ -1,11 +1,13 @@
-const firstMultiplier = 2;
+const firstMultiplier = 1;
 const lastMultiplier = 12;
 
 export const numberWords = [
-  '', '', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'
+  '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'
 ];
 
-const testedTables = [3, 4, 5, 6, 7, 8, 9, 11, 12];
+const testedTables = [2, 3, 4, 5,
+  // 6, 7, 8, 9, 11, 12
+];
 
 export default {
   tables: numberWords.flatMap((word, int) => {

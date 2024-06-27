@@ -3,7 +3,7 @@ import data, { numberWords } from './data.js';
 
 export const multiplicationConfig = {
   stateName: 'multiplication-state',
-  testCount: 20,
+  testCount: 10,
   completedTestCount: 12,
   completedTestReward: .5,
 };
