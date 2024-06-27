@@ -3,7 +3,7 @@ import data from './data.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
-  fieldCount: 14,
+  fieldCount: 10,
   completedWordCount: 3,
   hintCount: 5,
   completedFieldsReward: .5,
@@ -13,7 +13,7 @@ export const spellingConfig = {
 let tempOverrideWords = [];
 
 // Clear local storage prior to latest valid key
-const validDataSetKey = 'spelling-01-2024';
+const validDataSetKey = 'spelling-06-2024';
 if (!localStorage.getItem(validDataSetKey)) {
   localStorage.clear();
   localStorage.setItem(validDataSetKey, true);
@@ -33,8 +33,7 @@ export function initSpelling() {
 
   // Words
   const allWords = deduplicate(tempOverrideWords.length ? tempOverrideWords : [
-    ...data.year3_4,
-    ...data.year5_6,
+    ...data.year2,
   ]);
   const spellingState = JSON.parse(localStorage.getItem(spellingConfig.stateName) || '{}');
   const incompleteWords = allWords.filter(word => !((spellingState[word] || 0) >= spellingConfig.completedWordCount));
