@@ -29,12 +29,13 @@ export function speak(word, isRepeat) {
 
     if (isRepeat) {
       const fnHandle = speak;
-      const countEntry = fnHandle[word];
-      fnHandle[word] = (countEntry || 1) + 1;
+      const wordId = wordToId(word);
+      const countEntry = fnHandle[wordId];
+      fnHandle[wordId] = (countEntry || 1) + 1;
 
       if (countEntry >= spellingConfig.hintCount) {
-        fnHandle[word] = 0;
-        const input = $(`#${wordToId(word)}`);
+        fnHandle[wordId] = 0;
+        const input = $(`#${wordId}`);
         input.value = '';
         setTimeout(() => { input.value = word }, 500);
         setTimeout(() => { input.value = '' }, 800);
