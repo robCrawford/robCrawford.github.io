@@ -7,6 +7,7 @@ export const spellingConfig = {
   completedWordCount: 3,
   hintCount: 4,
   completedFieldsReward: .5,
+  redeemedKey: 'spelling-redeemed'
 };
 
 // Entries here will be the only words tested
@@ -40,7 +41,9 @@ export function initSpelling() {
 
   // Rewards
   const completedFieldsCount = Object.values(spellingState).reduce((acc, count) => acc + count, 0) / spellingConfig.fieldCount;
-  const rewardAmount = `🌟 ${(round(completedFieldsCount * spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward)).toFixed(2)}`;
+  const rewardTotal = round(completedFieldsCount * spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward);
+   const redeemedAmount = JSON.parse(localStorage.getItem(spellingConfig.redeemedKey) || 0);
+  const rewardAmount = `🌟 ${(rewardTotal - redeemedAmount).toFixed(2)}`;
 
   let shuffledWords = incompleteWords
     .map(value => ({ value, sort: Math.random() }))
@@ -142,6 +145,14 @@ export function initSpelling() {
       else {
         localStorage.removeItem(overridesKey);
       }
+      location.reload();
+    }
+  }
+
+  $('#rewards').ondblclick = () => {
+    const redeem = confirm('Redeem all points?');
+    if (redeem) {
+      localStorage.setItem(spellingConfig.redeemedKey, rewardTotal);
       location.reload();
     }
   }

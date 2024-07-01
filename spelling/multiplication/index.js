@@ -6,6 +6,7 @@ export const multiplicationConfig = {
   testCount: 10,
   completedTestCount: 12,
   completedTestReward: .5,
+  redeemedKey: 'multiplication-redeemed'
 };
 
 // Entries here will be the only tables tested e.g. ["2 x 2 = 4", "3 x 2 = 6"]
@@ -32,7 +33,9 @@ export function initMultiplication() {
 
   // Rewards
   const completeTablesCount = Object.values(multiplicationState).reduce((acc, count) => acc + count, 0) / multiplicationConfig.testCount;
-  const rewardAmount = `🌟 ${(round(completeTablesCount * multiplicationConfig.completedTestReward, multiplicationConfig.completedTestReward)).toFixed(2)}`;
+  const rewardTotal = (round(completeTablesCount * multiplicationConfig.completedTestReward, multiplicationConfig.completedTestReward));
+  const redeemedAmount = JSON.parse(localStorage.getItem(multiplicationConfig.redeemedKey) || 0);
+  const rewardAmount = `🌟 ${(rewardTotal - redeemedAmount).toFixed(2)}`;
 
   let shuffledTables = incompleteTables
     .map(value => ({ value, sort: Math.random() }))
@@ -76,7 +79,7 @@ export function initMultiplication() {
         $('#complete-overlay').style.display = 'block';
         speak("Awesome job! Wop wop wop wop wop wop wop wop wop wop wop wop");
         setTimeout(clearComplete, 4600);
-      }, 3000);
+      }, 800);
     }
   }
 
@@ -195,7 +198,7 @@ export function initMultiplication() {
       $('.tooltip .balloon').classList.toggle('show');
     };
 
-    // Retest sentence
+    // Retest
     Object.keys(multiplicationState).forEach((word) => {
       const resultEl = $(`#result-${sentenceToId(word)}`);
       resultEl.ondblclick = () => {
@@ -221,13 +224,20 @@ export function initMultiplication() {
   };
   $('#title').ondblclick = () => {
     const overrides = prompt('Tables override list e.g. "2 x 2 = 4,3 x 2 = 6" (leave empty to clear!)', storedOverrides);
-    if (overrides !== null) { // Cancel
+    if (overrides !== null) {
       if (overrides) {
         localStorage.setItem(overridesKey, overrides);
       }
       else {
         localStorage.removeItem(overridesKey);
       }
+      location.reload();
+    }
+  }
+  $('#rewards').ondblclick = () => {
+    const redeem = confirm('Redeem all points?');
+    if (redeem) { // Cancel
+      localStorage.setItem(multiplicationConfig.redeemedKey, rewardTotal);
       location.reload();
     }
   }

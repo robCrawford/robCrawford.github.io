@@ -54,6 +54,8 @@ h1 {
   line-height: 75px;
   color: white;
   animation: bounce 0.6s ease-out 1;
+  cursor: crosshair;
+  user-select: none;
 }
 a {
   color: white;
