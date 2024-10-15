@@ -30,16 +30,16 @@ export function speak(word, isRepeat) {
     if (isRepeat) {
       const fnHandle = speak;
       const wordId = wordToId(word);
-      const countEntry = fnHandle[wordId];
-      fnHandle[wordId] = (countEntry || 1) + 1;
+      let repeatCount = (fnHandle[wordId] || 0) + 1;
 
-      if (countEntry >= spellingConfig.hintCount) {
-        fnHandle[wordId] = 0;
+      if (repeatCount >= spellingConfig.hintCount) {
+        repeatCount = 0;
         const input = $(`#${wordId}`);
-        input.value = '';
-        setTimeout(() => { input.value = word }, 500);
-        setTimeout(() => { input.value = '' }, 800);
+        input.value = word;
+        setTimeout(() => { input.value = '' }, 300);
       }
+
+      fnHandle[wordId] = repeatCount;
     }
   } else {
     alert("Sorry, your browser doesn't support speech synthesis!");

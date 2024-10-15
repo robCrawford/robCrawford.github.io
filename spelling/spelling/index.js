@@ -5,8 +5,8 @@ export const spellingConfig = {
   stateName: 'spelling-state',
   fieldCount: 5,
   completedWordCount: 10,
-  hintCount: 2,
-  completedFieldsReward: .5,
+  hintCount: 1,
+  completedFieldsReward: .2,
   redeemedKey: 'spelling-redeemed'
 };
 

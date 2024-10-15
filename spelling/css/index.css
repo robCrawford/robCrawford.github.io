@@ -14,7 +14,7 @@ body {
   padding: 0;
   margin: 0;
   font: 12px "HelveticaNeue-Light", sans-serif;
-  background-color: #333;
+  background-color: #430d50;
 }
 #main {
   position: relative;
@@ -22,7 +22,7 @@ body {
   min-height: 100%;
   margin: 0 auto;
   padding: 0 30px 0 50px;
-  background: #999;
+  background: #9880aa;
 }
 #nav {
   position: absolute;
@@ -33,7 +33,7 @@ h1 {
   display: inline-block;
   font-size: 50px;
   font-weight: normal;
-  color: white;
+  color: #632073;
   margin: 60px 10px 30px 20px;
 }
 #title {

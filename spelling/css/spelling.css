@@ -11,7 +11,7 @@
 .field input {
   font-size: 30px;
   padding: 5px;
-  border: 5px solid rgb(165, 163, 147);
+  border: 5px solid #6e2080;
   width: 74%;
 }
 .field input.correct {
