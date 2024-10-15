@@ -3,15 +3,16 @@ import data from './data.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
-  fieldCount: 10,
-  completedWordCount: 3,
-  hintCount: 4,
+  fieldCount: 5,
+  completedWordCount: 10,
+  hintCount: 2,
   completedFieldsReward: .5,
   redeemedKey: 'spelling-redeemed'
 };
 
 // Entries here will be the only words tested
-let tempOverrideWords = [];
+// NOTE: update fieldCount for rewards calculation!
+let tempOverrideWords = ['bike', 'time', 'bone', 'note', 'home'];
 
 // Clear local storage prior to latest valid key
 const validDataSetKey = 'spelling-06-2024';
@@ -34,7 +35,7 @@ export function initSpelling() {
 
   // Words
   const allWords = deduplicate(tempOverrideWords.length ? tempOverrideWords : [
-    ...data.year2,
+    ...data.year1,
   ]);
   const spellingState = JSON.parse(localStorage.getItem(spellingConfig.stateName) || '{}');
   const incompleteWords = allWords.filter(word => !((spellingState[word] || 0) >= spellingConfig.completedWordCount));
@@ -84,7 +85,7 @@ export function initSpelling() {
       localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
 
       $('#complete-overlay').style.display = 'block';
-      speak("Awesome job! Wop wop wop wop wop wop wop wop wop wop wop wop");
+      speak("Awesome job Livvy! You are rocking it! Go go go");
       setTimeout(clearComplete, 4600);
     }
   }
