@@ -3,7 +3,7 @@ import data from './data.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
-  fieldCount: 5,
+  fieldCount: 6,
   completedWordCount: 10,
   hintCount: 1,
   completedFieldsReward: .2,
@@ -12,7 +12,7 @@ export const spellingConfig = {
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['bike', 'time', 'bone', 'note', 'home'];
+let tempOverrideWords = [];
 
 // Clear local storage prior to latest valid key
 const validDataSetKey = 'spelling-06-2024';
