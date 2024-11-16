@@ -12,7 +12,7 @@ export const spellingConfig = {
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = [];
+let tempOverrideWords = ['the', 'that', 'not', 'look', 'put', 'and', 'with', 'then', 'could', 'all', 'were', 'come', 'house', 'to', 'we', 'go', 'will', 'old', 'said', 'can', 'little', 'into', 'in', 'are', 'back', 'by', 'he', 'up', 'no', 'from'];
 
 // Clear local storage prior to latest valid key
 const validDataSetKey = 'spelling-06-2024';
