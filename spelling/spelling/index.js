@@ -6,7 +6,8 @@ export const spellingConfig = {
   fieldCount: 8,
   completedWordCount: 10,
   hintCount: 1,
-  completedFieldsReward: .2,
+  completedFieldsReward: 0.2,
+  rewardsKey: 'spelling-rewards',
   redeemedKey: 'spelling-redeemed'
 };
 
@@ -14,14 +15,15 @@ export const spellingConfig = {
 // NOTE: update fieldCount for rewards calculation!
 let tempOverrideWords = [];
 
-// Clear local storage prior to latest valid key
-const validDataSetKey = 'spelling-06-2024';
+// Clear local storage prior to latest key
+// NOTE: changing this removes all previous data from the browser!
+const validDataSetKey = 'spelling-01-2025';
 if (!localStorage.getItem(validDataSetKey)) {
   localStorage.clear();
   localStorage.setItem(validDataSetKey, true);
 }
 
-const helpHtml = `<p>Completing all ${spellingConfig.fieldCount} words earns ${spellingConfig.completedFieldsReward.toFixed(2)} points!</p><p>A word hint will be shown in the field if you need to click repeat ${spellingConfig.hintCount} times.</p>`;
+const helpHtml = `<p>Completing all ${spellingConfig.fieldCount} words earns ${spellingConfig.completedFieldsReward.toFixed(2)} points!</p><p>A word hint will be shown in the field if the repeat icon is clicked${spellingConfig.hintCount > 1 ? `  ${spellingConfig.hintCount} times` : '' }.</p>`;
 
 export function initSpelling() {
   let completed = false;
@@ -41,10 +43,16 @@ export function initSpelling() {
   const incompleteWords = allWords.filter(word => !((spellingState[word] || 0) >= spellingConfig.completedWordCount));
 
   // Rewards
-  const completedFieldsCount = Object.values(spellingState).reduce((acc, count) => acc + count, 0) / spellingConfig.fieldCount;
-  const rewardTotal = round(completedFieldsCount * spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward);
-   const redeemedAmount = JSON.parse(localStorage.getItem(spellingConfig.redeemedKey) || 0);
-  const rewardAmount = `🌟 ${(rewardTotal - redeemedAmount).toFixed(2)}`;
+  const rewardsTotal = JSON.parse(localStorage.getItem(spellingConfig.rewardsKey) || 0);
+  const redeemedAmount = JSON.parse(localStorage.getItem(spellingConfig.redeemedKey) || 0);
+  let rewardsDisplayAmount = rewardsTotal - redeemedAmount;
+
+  // Ensure rewardsTotal is not negative
+  if (rewardsDisplayAmount < 0) {
+    localStorage.setItem(spellingConfig.redeemedKey, rewardsTotal);
+    rewardsDisplayAmount = 0;
+  }
+  const rewardsText = `🌟 ${(rewardsDisplayAmount).toFixed(2)}`;
 
   let shuffledWords = incompleteWords
     .map(value => ({ value, sort: Math.random() }))
@@ -83,10 +91,11 @@ export function initSpelling() {
         spellingState[word] = (spellingState[word] || 0) + 1;
       })
       localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
+      localStorage.setItem(spellingConfig.rewardsKey, round(rewardsTotal + spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward));
 
       $('#complete-overlay').style.display = 'block';
-      speak("Awesome job Livvy! You are rocking it! Go go go");
-      setTimeout(clearComplete, 4600);
+      speak("Awesome job! You are rocking it! Go go go");
+      setTimeout(clearComplete, 3500);
     }
   }
 
@@ -129,7 +138,7 @@ export function initSpelling() {
 
   $('#form-fields').innerHTML = fieldsHtml;
   $('#results').innerHTML = resultsHtml;
-  $('#rewards').innerHTML = rewardAmount;
+  $('#rewards').innerHTML = rewardsText;
   $('#help-text').innerHTML = helpHtml;
   $('#results-link').onclick = () => {
     updateResultsUI(true);
@@ -153,7 +162,7 @@ export function initSpelling() {
   $('#rewards').ondblclick = () => {
     const redeem = confirm('Redeem all points?');
     if (redeem) {
-      localStorage.setItem(spellingConfig.redeemedKey, rewardTotal);
+      localStorage.setItem(spellingConfig.redeemedKey, redeemedAmount + rewardsTotal);
       location.reload();
     }
   }
@@ -168,9 +177,5 @@ export function initSpelling() {
     if(e.key === 'Enter') {
       document.activeElement.blur();
     }
-  });
-
-  document.addEventListener('contextmenu', e => {
-    e.preventDefault();
   });
 }

@@ -36,7 +36,7 @@ export function speak(word, isRepeat) {
         repeatCount = 0;
         const input = $(`#${wordId}`);
         input.value = word;
-        setTimeout(() => { input.value = '' }, 300);
+        setTimeout(() => { input.value = '' }, 200);
       }
 
       fnHandle[wordId] = repeatCount;

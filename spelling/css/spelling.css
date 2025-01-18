@@ -11,8 +11,10 @@
 .field input {
   font-size: 30px;
   padding: 5px;
-  border: 5px solid #6e2080;
+  border: 3px solid #4e6c79;
   width: 74%;
+  border-radius: 5px;
+  color: #333;
 }
 .field input.correct {
   color: green;
@@ -32,7 +34,7 @@
 .results-word {
   background: white;
   color: green;
-  border-radius: 10px;
+  border-radius: 5px;
   margin-right: 10px;
   margin-bottom: 10px;
 }

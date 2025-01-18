@@ -10,7 +10,7 @@
   right: 16px;
   font-size: 50px;
   line-height: 45px;
-  color: white;
+  color: #fff;
   padding: 0 0 0 10px;
   cursor: pointer;
 }
@@ -18,8 +18,9 @@
   position: relative;
   width: 100%;
   height: 108px;
-  background-color: #534455;
+  background-color: #414141;
   margin-bottom: 10px;
+  border-radius: 5px;
 }
 .field input {
   position: absolute;
@@ -28,8 +29,10 @@
   right: 60px;
   font-size: 30px;
   padding: 5px 14px;
-  border: 5px solid #534455;
+  border: 5px solid #414141;
   cursor: default;
+  border-radius: 8px;
+  color: #333;
 }
 .field input.correct {
   color: green;
@@ -73,7 +76,7 @@
 .results-sentence {
   background: white;
   color: green;
-  border-radius: 10px;
+  border-radius: 5px;
   margin-right: 10px;
   margin-bottom: 10px;
 }

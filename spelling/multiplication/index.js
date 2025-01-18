@@ -5,14 +5,15 @@ export const multiplicationConfig = {
   stateName: 'multiplication-state',
   testCount: 10,
   completedTestCount: 12,
-  completedTestReward: .5,
+  completedFieldsReward: .5,
+  rewardsKey: 'multiplication-rewards',
   redeemedKey: 'multiplication-redeemed'
 };
 
 // Entries here will be the only tables tested e.g. ["2 x 2 = 4", "3 x 2 = 6"]
 let tempOverrideTables = [];
 
-const helpHtml = `<p>Completing all ${multiplicationConfig.testCount} tests earns ${multiplicationConfig.completedTestReward.toFixed(2)} points!</p>`;
+const helpHtml = `<p>Completing all ${multiplicationConfig.testCount} tests earns ${multiplicationConfig.completedFieldsReward.toFixed(2)} points!</p>`;
 
 export function initMultiplication() {
   let completed = false;
@@ -32,10 +33,16 @@ export function initMultiplication() {
   const incompleteTables = allTables.filter(word => !((multiplicationState[word] || 0) >= multiplicationConfig.completedTestCount));
 
   // Rewards
-  const completeTablesCount = Object.values(multiplicationState).reduce((acc, count) => acc + count, 0) / multiplicationConfig.testCount;
-  const rewardTotal = (round(completeTablesCount * multiplicationConfig.completedTestReward, multiplicationConfig.completedTestReward));
+  const rewardsTotal = JSON.parse(localStorage.getItem(multiplicationConfig.rewardsKey) || 0);
   const redeemedAmount = JSON.parse(localStorage.getItem(multiplicationConfig.redeemedKey) || 0);
-  const rewardAmount = `🌟 ${(rewardTotal - redeemedAmount).toFixed(2)}`;
+  let rewardsDisplayAmount = rewardsTotal - redeemedAmount;
+
+  // Ensure rewardsTotal is not negative
+  if (rewardsDisplayAmount < 0) {
+    localStorage.setItem(multiplicationConfig.redeemedKey, rewardsTotal);
+    rewardsDisplayAmount = 0;
+  }
+  const rewardsText = `🌟 ${(rewardsDisplayAmount).toFixed(2)}`;
 
   let shuffledTables = incompleteTables
     .map(value => ({ value, sort: Math.random() }))
@@ -74,12 +81,11 @@ export function initMultiplication() {
         multiplicationState[word] = (multiplicationState[word] || 0) + 1;
       })
       localStorage.setItem(multiplicationConfig.stateName, JSON.stringify(multiplicationState));
+      localStorage.setItem(multiplicationConfig.rewardsKey, round(rewardsTotal + multiplicationConfig.completedFieldsReward, multiplicationConfig.completedFieldsReward));
 
-      setTimeout(() => {
-        $('#complete-overlay').style.display = 'block';
-        speak("Awesome job! Wop wop wop wop wop wop wop wop wop wop wop wop");
-        setTimeout(clearComplete, 4600);
-      }, 800);
+      $('#complete-overlay').style.display = 'block';
+      speak("Awesome job! You are rocking it! Go go go");
+      setTimeout(clearComplete, 3500);
     }
   }
 
@@ -214,7 +220,7 @@ export function initMultiplication() {
 
   $('#form-fields').innerHTML = fieldsHtml;
   $('#results').innerHTML = resultsHtml;
-  $('#rewards').innerHTML = rewardAmount;
+  $('#rewards').innerHTML = rewardsText;
   $('#help-text').innerHTML = helpHtml;
   $('#results-link').onclick = () => {
     updateResultsUI(true);
@@ -237,7 +243,7 @@ export function initMultiplication() {
   $('#rewards').ondblclick = () => {
     const redeem = confirm('Redeem all points?');
     if (redeem) { // Cancel
-      localStorage.setItem(multiplicationConfig.redeemedKey, rewardTotal);
+      localStorage.setItem(multiplicationConfig.redeemedKey, redeemedAmount + rewardsTotal);
       location.reload();
     }
   }
@@ -252,9 +258,5 @@ export function initMultiplication() {
     if(e.key === 'Enter') {
       document.activeElement.blur();
     }
-  });
-
-  document.addEventListener('contextmenu', e => {
-    e.preventDefault();
   });
 }
