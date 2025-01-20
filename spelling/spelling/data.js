@@ -1,6 +1,6 @@
 export default {
   year1: [
-    "he", "she", "we", "me", "be", "you", "all", "are", "her", "was", "they", "my", "the", "a", "do", "to", "today", "of", "said", "says", "were", "was", "is", "his", "has", "you", "your", "they", "be", "he", "me", "she", "no", "go", "so", "by", "my", "here", "there", "where", "love", "come", "some", "one", "once", "ask", "friend", "school", "put", "push", "pull", "full", "house", "our", 'bike', 'time', 'bone', 'note', 'home', 'the', 'that', 'not', 'look', 'and', 'with', 'then', 'could', 'to', 'go', 'will', 'old', 'can', 'little', 'into', 'in', 'back', 'up', 'from'
+    "he", "she", "we", "me", "be", "you", "all", "are", "her", "was", "they", "my", "the", "do", "to", "today", "of", "said", "says", "were", "was", "is", "his", "has", "you", "your", "they", "be", "he", "me", "she", "no", "go", "so", "by", "my", "here", "there", "where", "love", "come", "some", "one", "once", "ask", "friend", "school", "put", "push", "pull", "full", "house", "our", 'bike', 'time', 'bone', 'note', 'home', 'the', 'that', 'not', 'look', 'and', 'with', 'then', 'could', 'to', 'go', 'will', 'old', 'can', 'little', 'into', 'in', 'back', 'up', 'from'
   ],
   additional: [
     "guarantee", "guardian", "guess", "guest", "guide", "guidebook", "guitar",
