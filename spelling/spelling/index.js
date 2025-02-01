@@ -13,7 +13,7 @@ export const spellingConfig = {
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['happy', 'nasty', 'sly', 'spooky', 'joyful'];
+let tempOverrideWords = ['by', 'dry', 'shy', 'fly', 'spy', 'reply', 'door', 'floor'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
