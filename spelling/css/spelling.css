@@ -18,11 +18,11 @@
 }
 .field input.correct {
   color: green;
-  border: 5px solid green;
+  border-color: green;
 }
 .field input.incorrect {
   color: red;
-  border: 5px solid red;
+  border-color: red;
 }
 .repeat {
   font-size: 50px;
