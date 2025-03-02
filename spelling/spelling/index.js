@@ -13,7 +13,7 @@ export const spellingConfig = {
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['by', 'dry', 'shy', 'fly', 'spy', 'reply', 'door', 'floor'];
+let tempOverrideWords = ['by', 'dry', 'door', 'floor', 'poor', 'because', 'find', 'kind'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
