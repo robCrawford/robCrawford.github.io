@@ -3,7 +3,7 @@ import data from './data.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
-  fieldCount: 8,
+  fieldCount: 10,
   completedWordCount: 10,
   hintCount: 1,
   completedFieldsReward: 0.2,
@@ -13,7 +13,7 @@ export const spellingConfig = {
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['after','again','any','bath','beautiful','because','behind','both'];
+let tempOverrideWords = ['Egypt','myth','lyrics','gym','symbol','gymnastics','synonym','mystery','system','pyramid'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
