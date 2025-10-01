@@ -3,6 +3,7 @@
   flex-wrap: wrap;
   position: relative;
   padding-right: 17px;
+  min-height: 400px;
 }
 .repeat {
   position: absolute;

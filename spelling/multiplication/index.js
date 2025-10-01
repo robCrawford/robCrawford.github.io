@@ -7,13 +7,16 @@ export const multiplicationConfig = {
   completedTestCount: 12,
   completedFieldsReward: .5,
   rewardsKey: 'multiplication-rewards',
-  redeemedKey: 'multiplication-redeemed'
+  redeemedKey: 'multiplication-redeemed',
+  nameKey: 'spelling-name'
 };
+
+let name = '';
 
 // Entries here will be the only tables tested e.g. ["2 x 2 = 4", "3 x 2 = 6"]
 let tempOverrideTables = [];
 
-const helpHtml = `<p>Completing all ${multiplicationConfig.testCount} tests earns ${multiplicationConfig.completedFieldsReward.toFixed(2)} points!</p>`;
+const helpHtml = `<p>Completing all ${multiplicationConfig.testCount} tests earns ${multiplicationConfig.completedFieldsReward} points!</p>`;
 
 export function initMultiplication() {
   let completed = false;
@@ -43,6 +46,22 @@ export function initMultiplication() {
     rewardsDisplayAmount = 0;
   }
   const rewardsText = `🌟 ${(rewardsDisplayAmount).toFixed(2)}`;
+
+  // Name
+  name = localStorage.getItem(multiplicationConfig.nameKey) || '';
+  if (name) {
+    $('#title').innerHTML = `Hi, ${name}!`;
+    $('#title').onclick = () => {
+      if (confirm('reset name?')) {
+        localStorage.removeItem(multiplicationConfig.nameKey);
+        window.location.href = './index.html';
+      }
+    };
+  }
+  else {
+    $('#title').innerHTML = 'Multiplication';
+  }
+  $('#help-icon').style.display = 'inline-block';
 
   let shuffledTables = incompleteTables
     .map(value => ({ value, sort: Math.random() }))
@@ -152,7 +171,7 @@ export function initMultiplication() {
       }
 
       const handleIncorrect = () => {
-        speak('yowser');
+        speak('yowser!');
         input.focus();
         input.blur();
         setTimeout(clearInput, 1500);
@@ -200,7 +219,7 @@ export function initMultiplication() {
         }
       }
     });
-    $('#help-icon').ontouchend = () => {
+    $('#help-icon').onclick = () => {
       $('.tooltip .balloon').classList.toggle('show');
     };
 

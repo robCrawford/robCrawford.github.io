@@ -6,10 +6,13 @@ export const spellingConfig = {
   fieldCount: 10,
   completedWordCount: 10,
   hintCount: 1,
-  completedFieldsReward: 0.2,
+  completedFieldsReward: 0.5,
   rewardsKey: 'spelling-rewards',
-  redeemedKey: 'spelling-redeemed'
+  redeemedKey: 'spelling-redeemed',
+  nameKey: 'spelling-name'
 };
+
+let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
@@ -23,7 +26,7 @@ if (!localStorage.getItem(validDataSetKey)) {
   localStorage.setItem(validDataSetKey, true);
 }
 
-const helpHtml = `<p>Completing all ${spellingConfig.fieldCount} words earns ${spellingConfig.completedFieldsReward.toFixed(2)} points!</p><p>A word hint will be shown in the field if the repeat icon is clicked${spellingConfig.hintCount > 1 ? `  ${spellingConfig.hintCount} times` : '' }.</p>`;
+const helpHtml = `<p>Completing all ${spellingConfig.fieldCount} words earns ${spellingConfig.completedFieldsReward} points!</p><p>A word hint will be shown in the field if the repeat icon is clicked${spellingConfig.hintCount > 1 ? `  ${spellingConfig.hintCount} times` : '' }.</p>`;
 
 export function initSpelling() {
   let completed = false;
@@ -68,6 +71,38 @@ export function initSpelling() {
     updateResultsUI(true, true);
   }
 
+  // Name
+  name = localStorage.getItem(spellingConfig.nameKey) || '';
+  if (name) {
+    $('#title').innerHTML = `Hi, ${name}!`;
+    $('#title').onclick = () => {
+      if (confirm('reset name?')) {
+        localStorage.removeItem(spellingConfig.nameKey);
+        window.location.reload();
+      }
+    };
+  }
+  else {
+    // Dont run for @media only screen and (max-width: 630px) {
+    if (!window.matchMedia('(max-width: 630px)').matches) {
+      console.log('this ran');
+      $('#title').innerHTML = `<input id="name-input" type="text" class="pulse-border" placeholder="Enter your name!" />`;
+      $('#name-input').focus();
+      $('#name-input').onkeypress = (e) => {
+        if (e.key === 'Enter') {
+          const nameCased = $('#name-input').value.charAt(0).toUpperCase() + $('#name-input').value.slice(1);
+          localStorage.setItem(spellingConfig.nameKey, nameCased);
+          window.location.reload();
+        }
+      };
+    }
+  }
+  $('#help-icon').style.display = 'inline-block';
+
+  if (tempOverrideWords.length) {
+    $('#title').setAttribute('title', 'Today\'s words: ' + tempOverrideWords.join(', '));
+  }
+
   function updateResults() {
     const isComplete = words.reduce((allCorrect, word) => {
       const input = $(`#${wordToId(word)}`);
@@ -94,7 +129,7 @@ export function initSpelling() {
       localStorage.setItem(spellingConfig.rewardsKey, round(rewardsTotal + spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward));
 
       $('#complete-overlay').style.display = 'block';
-      speak("Awesome job! You are rocking it! Go go go");
+      speak(`Awesome job ${name}! You are rocking it! Go go go`);
       setTimeout(clearComplete, 3500);
     }
   }
@@ -118,7 +153,7 @@ export function initSpelling() {
       const repeatEl = $(`#${wordToId(word)} + .repeat`);
       repeatEl.onclick = () => speak(word, true);
     });
-    $('#help-icon').ontouchend = () => {
+    $('#help-icon').onclick = () => {
       $('.tooltip .balloon').classList.toggle('show');
     };
 
@@ -146,7 +181,7 @@ export function initSpelling() {
   $('#results-title').onclick = () => {
     updateResultsUI(false);
   };
-  $('#title').ondblclick = () => {
+  $('#help-icon').ondblclick = () => {
     const overrides = prompt('Words override list (comma separated, leave empty to clear!)', storedOverrides);
     if (overrides !== null) { // Cancel
       if (overrides) {
