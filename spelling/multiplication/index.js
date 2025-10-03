@@ -241,6 +241,7 @@ export function initMultiplication() {
   $('#results').innerHTML = resultsHtml;
   $('#rewards').innerHTML = rewardsText;
   $('#help-text').innerHTML = helpHtml;
+  $('#results-link').style.display = 'block';
   $('#results-link').onclick = () => {
     updateResultsUI(true);
   };

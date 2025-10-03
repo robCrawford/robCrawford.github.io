@@ -88,7 +88,7 @@ export function initSpelling() {
       console.log('this ran');
       $('#title').innerHTML = `<input id="name-input" type="text" class="pulse-border" placeholder="Enter your name!" />`;
       $('#name-input').focus();
-      $('#name-input').onkeypress = (e) => {
+      $('#name-input').onkeydown = (e) => {
         if (e.key === 'Enter') {
           const nameCased = $('#name-input').value.charAt(0).toUpperCase() + $('#name-input').value.slice(1);
           localStorage.setItem(spellingConfig.nameKey, nameCased);
@@ -175,6 +175,7 @@ export function initSpelling() {
   $('#results').innerHTML = resultsHtml;
   $('#rewards').innerHTML = rewardsText;
   $('#help-text').innerHTML = helpHtml;
+  $('#results-link').style.display = 'block';
   $('#results-link').onclick = () => {
     updateResultsUI(true);
   };

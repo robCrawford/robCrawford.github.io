@@ -1,7 +1,6 @@
 #form-fields {
   display: flex;
   flex-wrap: wrap;
-  min-height: 400px;
 }
 .field {
   cursor: pointer;
