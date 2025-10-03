@@ -128,7 +128,8 @@ export function initSpelling() {
       localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
       localStorage.setItem(spellingConfig.rewardsKey, round(rewardsTotal + spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward));
 
-      $('#complete-overlay').style.display = 'block';
+      $('#complete-overlay').style.left = 0;
+      $('#complete-overlay').style.right = 0;
       speak(`Awesome job ${name}! You are rocking it! Go go go`);
       setTimeout(clearComplete, 3500);
     }
