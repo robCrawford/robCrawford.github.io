@@ -16,7 +16,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['Egypt','myth','lyrics','gym','symbol','gymnastics','synonym','mystery','system','pyramid'];
+let tempOverrideWords = ['closure','exposure','measure','leisure','pressure','enclosure','composure','treasure','disclosure','pleasure'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
