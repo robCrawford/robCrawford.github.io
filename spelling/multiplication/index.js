@@ -5,7 +5,7 @@ export const multiplicationConfig = {
   stateName: 'multiplication-state',
   testCount: 10,
   completedTestCount: 12,
-  completedFieldsReward: .5,
+  completedFieldsReward: 50,
   rewardsKey: 'multiplication-rewards',
   redeemedKey: 'multiplication-redeemed',
   nameKey: 'spelling-name'
@@ -45,7 +45,7 @@ export function initMultiplication() {
     localStorage.setItem(multiplicationConfig.redeemedKey, rewardsTotal);
     rewardsDisplayAmount = 0;
   }
-  const rewardsText = `🌟 ${(rewardsDisplayAmount).toFixed(2)}`;
+  const rewardsText = `🌟 ${rewardsDisplayAmount}`;
 
   // Name
   name = localStorage.getItem(multiplicationConfig.nameKey) || '';
@@ -228,7 +228,7 @@ export function initMultiplication() {
     Object.keys(multiplicationState).forEach((word) => {
       const resultEl = $(`#result-${sentenceToId(word)}`);
       resultEl.ondblclick = () => {
-        if (confirm(`Retest "${word}"?`)) {
+        if (confirm(`Reset "${word}"?`)) {
           multiplicationState[`${word}~${Date.now()}`] = multiplicationState[word];
           delete multiplicationState[word];
           localStorage.setItem(multiplicationConfig.stateName, JSON.stringify(multiplicationState));
@@ -261,7 +261,7 @@ export function initMultiplication() {
       location.reload();
     }
   }
-  $('#rewards').ondblclick = () => {
+  $('#rewards').onclick = () => {
     const redeem = confirm('Redeem all points?');
     if (redeem) { // Cancel
       localStorage.setItem(multiplicationConfig.redeemedKey, redeemedAmount + rewardsTotal);

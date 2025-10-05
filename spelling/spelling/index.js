@@ -6,7 +6,7 @@ export const spellingConfig = {
   fieldCount: 10,
   completedWordCount: 10,
   hintCount: 1,
-  completedFieldsReward: 0.5,
+  completedFieldsReward: 50,
   rewardsKey: 'spelling-rewards',
   redeemedKey: 'spelling-redeemed',
   nameKey: 'spelling-name'
@@ -20,7 +20,7 @@ let tempOverrideWords = ['closure','exposure','measure','leisure','pressure','en
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
-const validDataSetKey = 'spelling-01-2025';
+const validDataSetKey = 'spelling-10-2025';
 if (!localStorage.getItem(validDataSetKey)) {
   localStorage.clear();
   localStorage.setItem(validDataSetKey, true);
@@ -55,7 +55,7 @@ export function initSpelling() {
     localStorage.setItem(spellingConfig.redeemedKey, rewardsTotal);
     rewardsDisplayAmount = 0;
   }
-  const rewardsText = `🌟 ${(rewardsDisplayAmount).toFixed(2)}`;
+  const rewardsText = `🌟 ${rewardsDisplayAmount}`;
 
   let shuffledWords = incompleteWords
     .map(value => ({ value, sort: Math.random() }))
@@ -162,7 +162,7 @@ export function initSpelling() {
     Object.keys(spellingState).forEach((word) => {
       const resultEl = $(`#result-${wordToId(word)}`);
       resultEl.ondblclick = () => {
-        if (confirm(`Retest "${word}"?`)) {
+        if (confirm(`Reset "${word}"?`)) {
           spellingState[`${word}~${Date.now()}`] = spellingState[word];
           delete spellingState[word];
           localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
@@ -196,7 +196,7 @@ export function initSpelling() {
     }
   }
 
-  $('#rewards').ondblclick = () => {
+  $('#rewards').onclick = () => {
     const redeem = confirm('Redeem all points?');
     if (redeem) {
       localStorage.setItem(spellingConfig.redeemedKey, redeemedAmount + rewardsTotal);
