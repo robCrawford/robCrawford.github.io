@@ -2,10 +2,6 @@ export default {
   year1: [
     "he", "she", "we", "me", "be", "you", "all", "are", "her", "was", "they", "my", "the", "do", "to", "today", "of", "said", "says", "were", "was", "is", "his", "has", "you", "your", "they", "be", "he", "me", "she", "no", "go", "so", "by", "my", "here", "there", "where", "love", "come", "some", "one", "once", "ask", "friend", "school", "put", "push", "pull", "full", "house", "our", 'bike', 'time', 'bone', 'note', 'home', 'the', 'that', 'not', 'look', 'and', 'with', 'then', 'could', 'to', 'go', 'will', 'old', 'can', 'little', 'into', 'in', 'back', 'up', 'from'
   ],
-  additional: [
-    "guarantee", "guardian", "guess", "guest", "guide", "guidebook", "guitar",
-    "interpreter", "interrupt", "intermission", "interfere", "international", "antibiotic", "antihero", "antidote"
-  ],
   year2: [
     "April", "August", "December", "February", "Friday", "January", "July", "June", "March", "May", "Monday", "Mr", "Mrs", "November", "October", "Saturday", "September", "Sunday", "Thursday", "Tuesday", "Wednesday", "about", "above", "after", "again", "although", "always", "another", "ask", "asked", "baby", "because", "before", "behind", "between", "both", "call", "called", "children", "climb", "could", "different", "eight", "even", "ever", "every", "everyone", "everything", "father", "finally", "five", "four", "friends", "great", "help", "hide", "house", "know", "large", "last", "little", "looked", "love", "many", "most", "mother", "need", "next", "nine", "oh", "once", "only", "other", "our", "over", "people", "please", "really", "school", "seven", "should", "six", "small", "suddenly", "ten", "these", "things", "think", "thorough", "those", "thought", "three", "time", "together", "under", "until", "very", "where", "which", "work", "would", "year", "young"
   ],

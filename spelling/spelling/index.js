@@ -16,7 +16,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['closure','exposure','measure','leisure','pressure','enclosure','composure','treasure','disclosure','pleasure'];
+let tempOverrideWords = [];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
@@ -40,7 +40,8 @@ export function initSpelling() {
 
   // Words
   const allWords = deduplicate(tempOverrideWords.length ? tempOverrideWords : [
-    ...data.year1,
+    ...data.year3,
+    ...data.year4,
   ]);
   const spellingState = JSON.parse(localStorage.getItem(spellingConfig.stateName) || '{}');
   const incompleteWords = allWords.filter(word => !((spellingState[word] || 0) >= spellingConfig.completedWordCount));
