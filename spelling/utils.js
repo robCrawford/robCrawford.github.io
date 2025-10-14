@@ -1,4 +1,5 @@
 import { spellingConfig } from './spelling/index.js';
+import { multiplicationConfig } from './multiplication/index.js';
 
 export function deduplicate(array) {
   return [...new Set(array)];
@@ -47,3 +48,14 @@ export function speak(word, isRepeat) {
 }
 
 export const pluralise = (word) => `${word}${word === 'six' ? 'es' : 's'}`;
+
+window.launchHelp = (page) => {
+ if (window.confirm('Clear saved form fields?')) {
+  if (page === 'spelling') {
+    localStorage.removeItem(spellingConfig.savedStateKey);
+  } else {
+    localStorage.removeItem(multiplicationConfig.savedStateKey);
+  }
+  location.reload();
+ }
+};

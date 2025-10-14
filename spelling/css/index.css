@@ -33,6 +33,9 @@ body {
 #nav > * {
   padding: 0 5px;
 }
+#nav a {
+  cursor: pointer;
+}
 #name-input {
   position: relative;
   top: -5px;

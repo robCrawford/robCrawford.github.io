@@ -4,12 +4,13 @@ import data from './data.js';
 export const spellingConfig = {
   stateName: 'spelling-state',
   fieldCount: 10,
-  completedWordCount: 10,
+  completedWordCount: 1200, // How many times to test each number sentence
   hintCount: 1,
   completedFieldsReward: 50,
   rewardsKey: 'spelling-rewards',
   redeemedKey: 'spelling-redeemed',
-  nameKey: 'spelling-name'
+  nameKey: 'spelling-name',
+  savedStateKey: 'spelling-state'
 };
 
 let name = '';
@@ -58,12 +59,27 @@ export function initSpelling() {
   }
   const rewardsText = `🌟 ${rewardsDisplayAmount}`;
 
-  let shuffledWords = incompleteWords
-    .map(value => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
+  // Check for saved state to restore the same words
+  const savedState = JSON.parse(localStorage.getItem(spellingConfig.savedStateKey) || '{}');
+  const savedStateWords = savedState.words || [];
+  const savedStateValues = savedState.values || {};
 
-  const words = shuffledWords.slice(0, spellingConfig.fieldCount);
+  let words;
+  if (savedStateWords.length > 0 && savedStateWords.every(word => incompleteWords.includes(word))) {
+    // Restore the same words if there's saved progress
+    words = savedStateWords;
+  } else {
+    // Generate new shuffled words
+    let shuffledWords = incompleteWords
+      .map(value => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+
+    words = shuffledWords.slice(0, spellingConfig.fieldCount);
+
+    // Clear any stale state data
+    localStorage.removeItem(spellingConfig.savedStateKey);
+  }
 
   if (!words.length) {
     $('#title').innerHTML = "Congratulations!<div class='complete-message'>You have learned every word 😊😊😊</div>";
@@ -86,15 +102,26 @@ export function initSpelling() {
   else {
     // Dont run for @media only screen and (max-width: 630px) {
     if (!window.matchMedia('(max-width: 630px)').matches) {
-      console.log('this ran');
       $('#title').innerHTML = `<input id="name-input" type="text" class="pulse-border" placeholder="Enter your name!" />`;
       $('#name-input').focus();
-      $('#name-input').onkeydown = (e) => {
-        if (e.key === 'Enter') {
-          const nameCased = $('#name-input').value.charAt(0).toUpperCase() + $('#name-input').value.slice(1);
+
+      const saveName = () => {
+        const inputValue = $('#name-input').value.trim();
+        if (inputValue) {
+          const nameCased = inputValue.charAt(0).toUpperCase() + inputValue.slice(1);
           localStorage.setItem(spellingConfig.nameKey, nameCased);
           window.location.reload();
         }
+      };
+
+      $('#name-input').onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          saveName();
+        }
+      };
+
+      $('#name-input').onblur = () => {
+        saveName();
       };
     }
   }
@@ -132,7 +159,11 @@ export function initSpelling() {
       $('#complete-overlay').style.left = 0;
       $('#complete-overlay').style.right = 0;
       speak(`Awesome job ${name}! You are rocking it! Go go go`);
-      setTimeout(clearComplete, 3500);
+      setTimeout(() => {
+        // Clear saved state
+        localStorage.removeItem(spellingConfig.savedStateKey);
+        clearComplete();
+      }, 3500);
     }
   }
 
@@ -149,8 +180,27 @@ export function initSpelling() {
   setTimeout(() => {
     words.forEach((word) => {
       const fieldEl = $(`#${wordToId(word)}`);
+
+      // Restore saved value if available
+      if (savedStateValues[word]) {
+        fieldEl.value = savedStateValues[word];
+        updateResults();
+      }
+
       fieldEl.onfocus = () => speak(word);
-      fieldEl.onblur = () => updateResults();
+      fieldEl.onblur = () => {
+        // Save state to localStorage with all words and their current values
+        const savedState = JSON.parse(localStorage.getItem(spellingConfig.savedStateKey) || '{}');
+        const values = savedState.values || {};
+        values[word] = fieldEl.value;
+
+        localStorage.setItem(spellingConfig.savedStateKey, JSON.stringify({
+          words: words,
+          values: values
+        }));
+
+        updateResults();
+      };
 
       const repeatEl = $(`#${wordToId(word)} + .repeat`);
       repeatEl.onclick = () => speak(word, true);
@@ -217,3 +267,4 @@ export function initSpelling() {
     }
   });
 }
+

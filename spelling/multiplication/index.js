@@ -4,11 +4,12 @@ import data, { numberWords } from './data.js';
 export const multiplicationConfig = {
   stateName: 'multiplication-state',
   testCount: 10,
-  completedTestCount: 12,
+  completedTestCount: 1200, // How many times to test each word
   completedFieldsReward: 50,
   rewardsKey: 'multiplication-rewards',
   redeemedKey: 'multiplication-redeemed',
-  nameKey: 'spelling-name'
+  nameKey: 'spelling-name',
+  savedStateKey: 'multiplication-state'
 };
 
 let name = '';
@@ -47,6 +48,11 @@ export function initMultiplication() {
   }
   const rewardsText = `🌟 ${rewardsDisplayAmount}`;
 
+  // Check for saved state to restore the same tables
+  const savedState = JSON.parse(localStorage.getItem(multiplicationConfig.savedStateKey) || '{}');
+  const savedStateTables = savedState.tables || [];
+  const savedStateValues = savedState.values || {};
+
   // Name
   name = localStorage.getItem(multiplicationConfig.nameKey) || '';
   if (name) {
@@ -63,12 +69,22 @@ export function initMultiplication() {
   }
   $('#help-icon').style.display = 'inline-block';
 
-  let shuffledTables = incompleteTables
-    .map(value => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
+  let tables;
+  if (savedStateTables.length > 0 && savedStateTables.every(table => incompleteTables.includes(table))) {
+    // Restore the same tables if there's saved progress
+    tables = savedStateTables;
+  } else {
+    // Generate new shuffled tables
+    let shuffledTables = incompleteTables
+      .map(value => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
 
-  const tables = shuffledTables.slice(0, multiplicationConfig.testCount);
+    tables = shuffledTables.slice(0, multiplicationConfig.testCount);
+
+    // Clear any stale state data
+    localStorage.removeItem(multiplicationConfig.savedStateKey);
+  }
 
   if (!tables.length) {
     $('#title').innerHTML = "Congratulations!<div class='complete-message'>You have completed every test 😊😊</div>";
@@ -105,7 +121,11 @@ export function initMultiplication() {
       $('#complete-overlay').style.left = 0;
       $('#complete-overlay').style.right = 0;
       speak(`Awesome job ${name}! You are rocking it! Go go go`);
-      setTimeout(clearComplete, 3500);
+      setTimeout(() => {
+        // Clear saved state
+        localStorage.removeItem(multiplicationConfig.savedStateKey);
+        clearComplete()
+      }, 3500);
     }
   }
 
@@ -144,6 +164,13 @@ export function initMultiplication() {
 
       const input = $(`#${sentenceId}`);
       input.progress = 0;
+
+      // Restore sentence if truthy in saved state
+      if (savedStateValues[sentence]) {
+        input.value = sentence;
+        updateResults();
+      }
+
       input.onfocus = () => {
         paused = false;
         speak(verbalPhrase);
@@ -212,6 +239,17 @@ export function initMultiplication() {
               speak(`are ${answerArr[2]}`);
               input.progress = 3;
               updateResults();
+
+              // Save state to localStorage with all tables
+              if (input.value === sentence) {
+                const formProgress = JSON.parse(localStorage.getItem(multiplicationConfig.savedStateKey) || '{}');
+                const values = formProgress.values || {};
+                values[sentence] = true;
+                localStorage.setItem(multiplicationConfig.savedStateKey, JSON.stringify({
+                  tables: tables,
+                  values: values
+                }));
+              }
             }
             else {
               handleIncorrect();
