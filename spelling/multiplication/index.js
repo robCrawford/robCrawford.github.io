@@ -117,13 +117,13 @@ export function initMultiplication() {
       });
       localStorage.setItem(multiplicationConfig.stateName, JSON.stringify(multiplicationState));
       localStorage.setItem(multiplicationConfig.rewardsKey, round(rewardsTotal + multiplicationConfig.completedFieldsReward, multiplicationConfig.completedFieldsReward));
+      // Clear saved UI state
+      localStorage.removeItem(multiplicationConfig.uiStateKey);
 
       $('#complete-overlay').style.left = 0;
       $('#complete-overlay').style.right = 0;
       speak(`Awesome job ${name}! You are rocking it! Go go go`);
       setTimeout(() => {
-        // Clear saved UI state
-        localStorage.removeItem(multiplicationConfig.uiStateKey);
         clearComplete();
       }, 3500);
     }
@@ -240,8 +240,8 @@ export function initMultiplication() {
               input.progress = 3;
               updateResults();
 
-              // Save UI state to localStorage with all tables
-              if (input.value === sentence) {
+              // Save UI state to localStorage with all tables (only if not completed)
+              if (!completed && input.value === sentence) {
                 const uiState = JSON.parse(localStorage.getItem(multiplicationConfig.uiStateKey) || '{}');
                 const values = uiState.values || {};
                 values[sentence] = true;

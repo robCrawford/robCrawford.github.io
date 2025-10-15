@@ -155,13 +155,13 @@ export function initSpelling() {
       });
       localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
       localStorage.setItem(spellingConfig.rewardsKey, round(rewardsTotal + spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward));
+      // Clear saved UI state
+      localStorage.removeItem(spellingConfig.uiStateKey);
 
       $('#complete-overlay').style.left = 0;
       $('#complete-overlay').style.right = 0;
       speak(`Awesome job ${name}! You are rocking it! Go go go`);
       setTimeout(() => {
-        // Clear saved UI state
-        localStorage.removeItem(spellingConfig.uiStateKey);
         clearComplete();
       }, 3500);
     }
@@ -189,15 +189,17 @@ export function initSpelling() {
 
       fieldEl.onfocus = () => speak(word);
       fieldEl.onblur = () => {
-        // Save UI state to localStorage with all words and their current values
-        const uiState = JSON.parse(localStorage.getItem(spellingConfig.uiStateKey) || '{}');
-        const values = uiState.values || {};
-        values[word] = fieldEl.value;
+        // Save UI state to localStorage with all words and their current values (only if not completed)
+        if (!completed) {
+          const uiState = JSON.parse(localStorage.getItem(spellingConfig.uiStateKey) || '{}');
+          const values = uiState.values || {};
+          values[word] = fieldEl.value;
 
-        localStorage.setItem(spellingConfig.uiStateKey, JSON.stringify({
-          words: words,
-          values: values
-        }));
+          localStorage.setItem(spellingConfig.uiStateKey, JSON.stringify({
+            words: words,
+            values: values
+          }));
+        }
 
         updateResults();
       };
