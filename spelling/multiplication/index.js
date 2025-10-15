@@ -9,7 +9,7 @@ export const multiplicationConfig = {
   rewardsKey: 'multiplication-rewards',
   redeemedKey: 'multiplication-redeemed',
   nameKey: 'spelling-name',
-  savedStateKey: 'multiplication-state'
+  uiStateKey: 'multiplication-ui-state'
 };
 
 let name = '';
@@ -48,10 +48,10 @@ export function initMultiplication() {
   }
   const rewardsText = `🌟 ${rewardsDisplayAmount}`;
 
-  // Check for saved state to restore the same tables
-  const savedState = JSON.parse(localStorage.getItem(multiplicationConfig.savedStateKey) || '{}');
-  const savedStateTables = savedState.tables || [];
-  const savedStateValues = savedState.values || {};
+  // Check for saved UI state to restore the same tables
+  const savedUiState = JSON.parse(localStorage.getItem(multiplicationConfig.uiStateKey) || '{}');
+  const savedUiStateTables = savedUiState.tables || [];
+  const savedUiStateValues = savedUiState.values || {};
 
   // Name
   name = localStorage.getItem(multiplicationConfig.nameKey) || '';
@@ -70,9 +70,9 @@ export function initMultiplication() {
   $('#help-icon').style.display = 'inline-block';
 
   let tables;
-  if (savedStateTables.length > 0 && savedStateTables.every(table => incompleteTables.includes(table))) {
+  if (savedUiStateTables.length > 0 && savedUiStateTables.every(table => incompleteTables.includes(table))) {
     // Restore the same tables if there's saved progress
-    tables = savedStateTables;
+    tables = savedUiStateTables;
   } else {
     // Generate new shuffled tables
     let shuffledTables = incompleteTables
@@ -82,8 +82,8 @@ export function initMultiplication() {
 
     tables = shuffledTables.slice(0, multiplicationConfig.testCount);
 
-    // Clear any stale state data
-    localStorage.removeItem(multiplicationConfig.savedStateKey);
+    // Clear any stale UI state data
+    localStorage.removeItem(multiplicationConfig.uiStateKey);
   }
 
   if (!tables.length) {
@@ -114,7 +114,7 @@ export function initMultiplication() {
       completed = true;
       tables.forEach(word => {
         multiplicationState[word] = (multiplicationState[word] || 0) + 1;
-      })
+      });
       localStorage.setItem(multiplicationConfig.stateName, JSON.stringify(multiplicationState));
       localStorage.setItem(multiplicationConfig.rewardsKey, round(rewardsTotal + multiplicationConfig.completedFieldsReward, multiplicationConfig.completedFieldsReward));
 
@@ -122,9 +122,9 @@ export function initMultiplication() {
       $('#complete-overlay').style.right = 0;
       speak(`Awesome job ${name}! You are rocking it! Go go go`);
       setTimeout(() => {
-        // Clear saved state
-        localStorage.removeItem(multiplicationConfig.savedStateKey);
-        clearComplete()
+        // Clear saved UI state
+        localStorage.removeItem(multiplicationConfig.uiStateKey);
+        clearComplete();
       }, 3500);
     }
   }
@@ -135,12 +135,12 @@ export function initMultiplication() {
       ui += `<div class="number-button paused" id="${sentenceId}-${i}">${i}</div>`;
     });
     return `${ui}</div>`;
-  }
+  };
 
-  const fieldsHtml = tables.map((sentence, i) => {
+  const fieldsHtml = tables.map((sentence) => {
     const sentenceId = sentenceToId(sentence);
     return `<div class="field"><input id="${sentenceId}" class="paused" type="text" autocorrect="off" autocapitalize="off" readonly /><span title="repeat" class="repeat">↻</span>${getNumberUI(sentenceId)}</div>`;
-  }).join('');;
+  }).join('');
 
   const resultsHtml = Object.entries(multiplicationState).map(([sentence, count]) => {
     const displayTable = /~/.test(sentence) ? `<s>${sentence.split('~')[0]}</s>` : sentence;
@@ -166,7 +166,7 @@ export function initMultiplication() {
       input.progress = 0;
 
       // Restore sentence if truthy in saved state
-      if (savedStateValues[sentence]) {
+      if (savedUiStateValues[sentence]) {
         input.value = sentence;
         updateResults();
       }
@@ -189,14 +189,14 @@ export function initMultiplication() {
         input.progress = 0;
         input.classList.remove('correct');
         input.classList.remove('incorrect');
-      }
+      };
 
       const repeatEl = $(`#${sentenceId} ~ .repeat`);
       repeatEl.onclick = () => {
         clearInput();
         input.focus();
         input.blur();
-      }
+      };
 
       const handleIncorrect = () => {
         speak('yowser!');
@@ -240,12 +240,12 @@ export function initMultiplication() {
               input.progress = 3;
               updateResults();
 
-              // Save state to localStorage with all tables
+              // Save UI state to localStorage with all tables
               if (input.value === sentence) {
-                const formProgress = JSON.parse(localStorage.getItem(multiplicationConfig.savedStateKey) || '{}');
-                const values = formProgress.values || {};
+                const uiState = JSON.parse(localStorage.getItem(multiplicationConfig.uiStateKey) || '{}');
+                const values = uiState.values || {};
                 values[sentence] = true;
-                localStorage.setItem(multiplicationConfig.savedStateKey, JSON.stringify({
+                localStorage.setItem(multiplicationConfig.uiStateKey, JSON.stringify({
                   tables: tables,
                   values: values
                 }));
@@ -255,7 +255,7 @@ export function initMultiplication() {
               handleIncorrect();
             }
           }
-        }
+        };
       }
     });
     $('#help-icon').onclick = () => {
@@ -265,13 +265,15 @@ export function initMultiplication() {
     // Retest
     Object.keys(multiplicationState).forEach((word) => {
       const resultEl = $(`#result-${sentenceToId(word)}`);
-      resultEl.ondblclick = () => {
-        if (confirm(`Reset "${word}"?`)) {
-          multiplicationState[`${word}~${Date.now()}`] = multiplicationState[word];
-          delete multiplicationState[word];
-          localStorage.setItem(multiplicationConfig.stateName, JSON.stringify(multiplicationState));
-          location.reload();
-        }
+      if (resultEl) {
+        resultEl.ondblclick = () => {
+          if (confirm(`Reset "${word}"?`)) {
+            multiplicationState[`${word}~${Date.now()}`] = multiplicationState[word];
+            delete multiplicationState[word];
+            localStorage.setItem(multiplicationConfig.stateName, JSON.stringify(multiplicationState));
+            location.reload();
+          }
+        };
       }
     });
   });
@@ -298,14 +300,14 @@ export function initMultiplication() {
       }
       location.reload();
     }
-  }
+  };
   $('#rewards').onclick = () => {
     const redeem = confirm('Redeem all points?');
-    if (redeem) { // Cancel
-      localStorage.setItem(multiplicationConfig.redeemedKey, redeemedAmount + rewardsTotal);
+    if (redeem) {
+      localStorage.setItem(multiplicationConfig.redeemedKey, rewardsTotal);
       location.reload();
     }
-  }
+  };
 
   function updateResultsUI(showResults, hideTitle) {
     $('#results-title').style.display = showResults && !hideTitle ? 'block' : 'none';

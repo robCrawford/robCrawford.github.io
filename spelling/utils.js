@@ -6,7 +6,7 @@ export function deduplicate(array) {
 }
 
 export function round(value, step = 1) {
-  var inv = 1.0 / step;
+  const inv = 1.0 / step;
   return Math.round(value * inv) / inv;
 }
 
@@ -24,7 +24,7 @@ export function clearComplete() {
 
 export function speak(word, isRepeat) {
   if ('speechSynthesis' in window) {
-    var msg = new SpeechSynthesisUtterance();
+    const msg = new SpeechSynthesisUtterance();
     msg.text = word;
     window.speechSynthesis.speak(msg);
 
@@ -50,12 +50,12 @@ export function speak(word, isRepeat) {
 export const pluralise = (word) => `${word}${word === 'six' ? 'es' : 's'}`;
 
 window.launchHelp = (page) => {
- if (window.confirm('Clear saved form fields?')) {
-  if (page === 'spelling') {
-    localStorage.removeItem(spellingConfig.savedStateKey);
-  } else {
-    localStorage.removeItem(multiplicationConfig.savedStateKey);
+  if (window.confirm('Clear saved form fields?')) {
+    if (page === 'spelling') {
+      localStorage.removeItem(spellingConfig.uiStateKey);
+    } else {
+      localStorage.removeItem(multiplicationConfig.uiStateKey);
+    }
+    location.reload();
   }
-  location.reload();
- }
 };

@@ -4,13 +4,13 @@ import data from './data.js';
 export const spellingConfig = {
   stateName: 'spelling-state',
   fieldCount: 10,
-  completedWordCount: 1200, // How many times to test each number sentence
+  completedWordCount: 1200, // How many times to test each word
   hintCount: 1,
   completedFieldsReward: 50,
   rewardsKey: 'spelling-rewards',
   redeemedKey: 'spelling-redeemed',
   nameKey: 'spelling-name',
-  savedStateKey: 'spelling-state'
+  uiStateKey: 'spelling-ui-state'
 };
 
 let name = '';
@@ -60,14 +60,14 @@ export function initSpelling() {
   const rewardsText = `🌟 ${rewardsDisplayAmount}`;
 
   // Check for saved state to restore the same words
-  const savedState = JSON.parse(localStorage.getItem(spellingConfig.savedStateKey) || '{}');
-  const savedStateWords = savedState.words || [];
-  const savedStateValues = savedState.values || {};
+  const savedUiState = JSON.parse(localStorage.getItem(spellingConfig.uiStateKey) || '{}');
+  const savedUiStateWords = savedUiState.words || [];
+  const savedUiStateValues = savedUiState.values || {};
 
   let words;
-  if (savedStateWords.length > 0 && savedStateWords.every(word => incompleteWords.includes(word))) {
+  if (savedUiStateWords.length > 0 && savedUiStateWords.every(word => incompleteWords.includes(word))) {
     // Restore the same words if there's saved progress
-    words = savedStateWords;
+    words = savedUiStateWords;
   } else {
     // Generate new shuffled words
     let shuffledWords = incompleteWords
@@ -77,8 +77,8 @@ export function initSpelling() {
 
     words = shuffledWords.slice(0, spellingConfig.fieldCount);
 
-    // Clear any stale state data
-    localStorage.removeItem(spellingConfig.savedStateKey);
+    // Clear any stale UI state data
+    localStorage.removeItem(spellingConfig.uiStateKey);
   }
 
   if (!words.length) {
@@ -152,7 +152,7 @@ export function initSpelling() {
       completed = true;
       words.forEach(word => {
         spellingState[word] = (spellingState[word] || 0) + 1;
-      })
+      });
       localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
       localStorage.setItem(spellingConfig.rewardsKey, round(rewardsTotal + spellingConfig.completedFieldsReward, spellingConfig.completedFieldsReward));
 
@@ -160,14 +160,14 @@ export function initSpelling() {
       $('#complete-overlay').style.right = 0;
       speak(`Awesome job ${name}! You are rocking it! Go go go`);
       setTimeout(() => {
-        // Clear saved state
-        localStorage.removeItem(spellingConfig.savedStateKey);
+        // Clear saved UI state
+        localStorage.removeItem(spellingConfig.uiStateKey);
         clearComplete();
       }, 3500);
     }
   }
 
-  const fieldsHtml = words.map((word, i) =>
+  const fieldsHtml = words.map((word) =>
     `<div class="field"><input id="${wordToId(word)}" type="text" autocorrect="off" autocapitalize="off" /><span title="repeat" class="repeat">↻</span></div>`
   ).join('');
 
@@ -182,19 +182,19 @@ export function initSpelling() {
       const fieldEl = $(`#${wordToId(word)}`);
 
       // Restore saved value if available
-      if (savedStateValues[word]) {
-        fieldEl.value = savedStateValues[word];
+      if (savedUiStateValues[word]) {
+        fieldEl.value = savedUiStateValues[word];
         updateResults();
       }
 
       fieldEl.onfocus = () => speak(word);
       fieldEl.onblur = () => {
-        // Save state to localStorage with all words and their current values
-        const savedState = JSON.parse(localStorage.getItem(spellingConfig.savedStateKey) || '{}');
-        const values = savedState.values || {};
+        // Save UI state to localStorage with all words and their current values
+        const uiState = JSON.parse(localStorage.getItem(spellingConfig.uiStateKey) || '{}');
+        const values = uiState.values || {};
         values[word] = fieldEl.value;
 
-        localStorage.setItem(spellingConfig.savedStateKey, JSON.stringify({
+        localStorage.setItem(spellingConfig.uiStateKey, JSON.stringify({
           words: words,
           values: values
         }));
@@ -212,13 +212,15 @@ export function initSpelling() {
     // Retest word
     Object.keys(spellingState).forEach((word) => {
       const resultEl = $(`#result-${wordToId(word)}`);
-      resultEl.ondblclick = () => {
-        if (confirm(`Reset "${word}"?`)) {
-          spellingState[`${word}~${Date.now()}`] = spellingState[word];
-          delete spellingState[word];
-          localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
-          location.reload();
-        }
+      if (resultEl) {
+        resultEl.ondblclick = () => {
+          if (confirm(`Reset "${word}"?`)) {
+            spellingState[`${word}~${Date.now()}`] = spellingState[word];
+            delete spellingState[word];
+            localStorage.setItem(spellingConfig.stateName, JSON.stringify(spellingState));
+            location.reload();
+          }
+        };
       }
     });
   });
@@ -236,7 +238,7 @@ export function initSpelling() {
   };
   $('#help-icon').ondblclick = () => {
     const overrides = prompt('Words override list (comma separated, leave empty to clear!)', storedOverrides);
-    if (overrides !== null) { // Cancel
+    if (overrides !== null) {
       if (overrides) {
         localStorage.setItem(overridesKey, overrides);
       }
@@ -245,15 +247,15 @@ export function initSpelling() {
       }
       location.reload();
     }
-  }
+  };
 
   $('#rewards').onclick = () => {
     const redeem = confirm('Redeem all points?');
     if (redeem) {
-      localStorage.setItem(spellingConfig.redeemedKey, redeemedAmount + rewardsTotal);
+      localStorage.setItem(spellingConfig.redeemedKey, rewardsTotal);
       location.reload();
     }
-  }
+  };
 
   function updateResultsUI(showResults, hideTitle) {
     $('#results-title').style.display = showResults && !hideTitle ? 'block' : 'none';
