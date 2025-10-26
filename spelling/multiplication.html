@@ -11,7 +11,23 @@
 <body>
   <div id="main" class="multiplication">
     <div id="complete-overlay"></div>
-    <div id="nav"><a href='./index.html'>Spelling</a> | <b>Multiplication</b> |<a onclick="window.launchHelp('multiplication')">❕Help</a></div>
+    <div id="nav">
+      <a href='./index.html'>Spelling</a> | <b>Multiplication</b> | <a class="reset-link" title="Reset" onclick="window.promptReset('multiplication')">
+        <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+          <path d="M4.5 14.5l7.5-7.5a3 3 0 0 1 4.2 0l4.8 4.8a3 3 0 0 1 0 4.2l-5.5 5.5H9a3 3 0 0 1-2.1-.9l-2.4-2.4a3 3 0 0 1 0-4.2z" />
+          <line x1="3" y1="22" x2="21" y2="22" />
+        </svg>
+      </a>
+    </div>
     <h1 id="title"></h1>
     <div id="help-icon" class="btn btn-primary tooltip" style="display: none">
       <img src="img/emoji-sloth.png" width="60px" height="60px" />

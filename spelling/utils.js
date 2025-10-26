@@ -49,7 +49,7 @@ export function speak(word, isRepeat) {
 
 export const pluralise = (word) => `${word}${word === 'six' ? 'es' : 's'}`;
 
-window.launchHelp = (page) => {
+window.promptReset = (page) => {
   if (window.confirm('Clear saved form fields?')) {
     if (page === 'spelling') {
       localStorage.removeItem(spellingConfig.uiStateKey);

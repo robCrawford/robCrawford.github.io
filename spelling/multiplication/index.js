@@ -4,7 +4,7 @@ import data, { numberWords } from './data.js';
 export const multiplicationConfig = {
   stateName: 'multiplication-state',
   testCount: 10,
-  completedTestCount: 1200, // How many times to test each word
+  completedTestCount: 1200, // How many times to test each number sentence
   completedFieldsReward: 50,
   rewardsKey: 'multiplication-rewards',
   redeemedKey: 'multiplication-redeemed',
@@ -196,6 +196,10 @@ export function initMultiplication() {
         clearInput();
         input.focus();
         input.blur();
+        input.placeholder = sentence;
+        setTimeout(() => {
+          input.placeholder = '';
+        }, 1500);
       };
 
       const handleIncorrect = () => {

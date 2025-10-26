@@ -36,6 +36,11 @@ body {
 #nav a {
   cursor: pointer;
 }
+.reset-link {
+  position: relative;
+  left: -1px;
+  top: 2px;
+}
 #name-input {
   position: relative;
   top: -5px;
