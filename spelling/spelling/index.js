@@ -3,7 +3,7 @@ import data from './data.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
-  fieldCount: 10,
+  fieldCount: 5,
   completedWordCount: 1200, // How many times to test each word
   hintCount: 1,
   completedFieldsReward: 50,
@@ -17,7 +17,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = [];
+let tempOverrideWords = ['the', 'and', 'a', 'to', 'said'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
