@@ -3,13 +3,14 @@ import data, { numberWords } from './data.js';
 
 export const multiplicationConfig = {
   stateName: 'multiplication-state',
-  testCount: 10,
+  testCount: 12,
   completedTestCount: 1200, // How many times to test each number sentence
   completedFieldsReward: 50,
   rewardsKey: 'multiplication-rewards',
   redeemedKey: 'multiplication-redeemed',
   nameKey: 'spelling-name',
-  uiStateKey: 'multiplication-ui-state'
+  uiStateKey: 'multiplication-ui-state',
+  tableSelectorKey: 'multiplication-ui-table'
 };
 
 let name = '';
@@ -48,6 +49,9 @@ export function initMultiplication() {
   }
   const rewardsText = `🌟 ${rewardsDisplayAmount}`;
 
+  // Check for table selector mode
+  const selectedTable = localStorage.getItem(multiplicationConfig.tableSelectorKey);
+
   // Check for saved UI state to restore the same tables
   const savedUiState = JSON.parse(localStorage.getItem(multiplicationConfig.uiStateKey) || '{}');
   const savedUiStateTables = savedUiState.tables || [];
@@ -70,7 +74,17 @@ export function initMultiplication() {
   $('#help-icon').style.display = 'inline-block';
 
   let tables;
-  if (savedUiStateTables.length > 0 && savedUiStateTables.every(table => incompleteTables.includes(table))) {
+
+  if (selectedTable) {
+    // Table selector mode
+    const tableNum = parseInt(selectedTable, 10);
+    tables = [];
+    for (let i = 1; i <= multiplicationConfig.testCount; i++) {
+      tables.push(`${i} x ${tableNum} = ${i * tableNum}`);
+    }
+    // Clear any saved UI state when in table selector mode
+    localStorage.removeItem(multiplicationConfig.uiStateKey);
+  } else if (savedUiStateTables.length > 0 && savedUiStateTables.every(table => incompleteTables.includes(table))) {
     // Restore the same tables if there's saved progress
     tables = savedUiStateTables;
   } else {
@@ -286,6 +300,34 @@ export function initMultiplication() {
   $('#results').innerHTML = resultsHtml;
   $('#rewards').innerHTML = rewardsText;
   $('#help-text').innerHTML = helpHtml;
+
+  // Generate table selector UI
+  const tableSelectorHtml = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(num => {
+    const isActive = selectedTable === String(num) ? ' active' : '';
+    return `<div class="table-button${isActive}" data-table="${num}">${num}</div>`;
+  }).join('');
+
+  $('#table-selector').innerHTML = tableSelectorHtml;
+
+  // Add click handlers for table selector buttons
+  [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].forEach(num => {
+    const button = $(`.table-button[data-table="${num}"]`);
+    button.onclick = () => {
+      const currentSelection = localStorage.getItem(multiplicationConfig.tableSelectorKey);
+
+      if (currentSelection === String(num)) {
+        // Toggle off - remove from localStorage
+        localStorage.removeItem(multiplicationConfig.tableSelectorKey);
+      } else {
+        // Toggle on - set in localStorage
+        localStorage.setItem(multiplicationConfig.tableSelectorKey, String(num));
+      }
+
+      // Reload to apply the change
+      location.reload();
+    };
+  });
+
   $('#results-link').style.display = 'block';
   $('#results-link').onclick = () => {
     updateResultsUI(true);

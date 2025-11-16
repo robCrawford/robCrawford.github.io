@@ -1,3 +1,38 @@
+.table-selector {
+  display: flex;
+  gap: 8px;
+  margin: -10px 0 25px 20px;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 630px) {
+  .table-selector {
+    margin: 14px 0 8px 0;
+  }
+}
+
+.table-button {
+  padding: 10px 16px;
+  background-color: #e0e0e0;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.table-button:hover {
+  background-color: #d0d0d0;
+}
+
+.table-button.active {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #45a049;
+}
+
 #form-fields {
   display: flex;
   flex-wrap: wrap;
