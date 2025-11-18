@@ -82,8 +82,6 @@ export function initMultiplication() {
     for (let i = 1; i <= multiplicationConfig.testCount; i++) {
       tables.push(`${i} x ${tableNum} = ${i * tableNum}`);
     }
-    // Clear any saved UI state when in table selector mode
-    localStorage.removeItem(multiplicationConfig.uiStateKey);
   } else if (savedUiStateTables.length > 0 && savedUiStateTables.every(table => incompleteTables.includes(table))) {
     // Restore the same tables if there's saved progress
     tables = savedUiStateTables;
@@ -316,14 +314,13 @@ export function initMultiplication() {
       const currentSelection = localStorage.getItem(multiplicationConfig.tableSelectorKey);
 
       if (currentSelection === String(num)) {
-        // Toggle off - remove from localStorage
         localStorage.removeItem(multiplicationConfig.tableSelectorKey);
       } else {
-        // Toggle on - set in localStorage
         localStorage.setItem(multiplicationConfig.tableSelectorKey, String(num));
       }
+      // Clear any saved UI state when switching mode
+      localStorage.removeItem(multiplicationConfig.uiStateKey);
 
-      // Reload to apply the change
       location.reload();
     };
   });
