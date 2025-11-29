@@ -11,7 +11,8 @@
   const href = location.href;
   const redirects = [
     // test whole url    | set replacement path
-    [/io\/multiplication/, 'spelling/multiplication'],
+    [/io\/multiplication/, '/spelling/multiplication'],
+    [/io\/demos\/pure-ui-actions/, '/demos/pure-ui-actions/spa/'],
   ];
 
   for (let i = 0, len = redirects.length; i < len; i++) {
