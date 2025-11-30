@@ -17,7 +17,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['at', 'but', 'is', 'his', 'for'];
+let tempOverrideWords = ['we', 'all', 'with', 'that', 'can'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
