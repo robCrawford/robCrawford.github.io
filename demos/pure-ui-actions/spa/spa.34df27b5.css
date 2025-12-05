@@ -110,11 +110,6 @@ button.like:hover {
   color: #adb5bd;
 }
 
-.intro {
-  margin: 1.5rem 0;
-  font-size: 1rem;
-}
-
 .counter {
   vertical-align: top;
   text-align: center;
@@ -207,5 +202,113 @@ button.like:hover {
   color: #f8f9fa;
   background: #343a40;
   border-color: #495057;
+}
+
+.dates-picker {
+  max-width: 300px;
+  margin: 1.5rem 0;
+}
+
+.dates-picker .ui-row {
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .8rem;
+  display: flex;
+}
+
+.dates-picker input {
+  box-sizing: border-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  width: 100%;
+  padding: .5rem .75rem;
+  font-size: 1rem;
+}
+
+.dates-picker input:focus {
+  border-color: #0d6efd;
+  outline: none;
+  box-shadow: 0 0 0 .2rem #0d6efd40;
+}
+
+.page.dark .dates-picker input {
+  color: #f8f9fa;
+  background: #343a40;
+  border-color: #495057;
+}
+
+.page.dark .dates-picker input:focus {
+  border-color: #6ea8fe;
+  box-shadow: 0 0 0 .2rem #6ea8fe40;
+}
+
+.dates-picker .help-toggle {
+  padding: 2px 6px 0;
+}
+
+.dates-picker .dates-info {
+  color: #6c757d;
+  font-size: .85rem;
+}
+
+.page.dark .dates-picker .dates-info {
+  color: #adb5bd;
+}
+
+.dates-picker .dates-list {
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  max-height: 200px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.page.dark .dates-picker .dates-list {
+  background: #343a40;
+  border-color: #495057;
+}
+
+.dates-picker .dates-list li {
+  cursor: pointer;
+  border-bottom: 1px solid #e9ecef;
+  padding: .5rem .75rem;
+  transition: background-color .1s;
+}
+
+.dates-picker .dates-list li:last-child {
+  border-bottom: none;
+}
+
+.dates-picker .dates-list li:hover {
+  background: #e9ecef;
+}
+
+.dates-picker .dates-list li.selected {
+  color: #fff;
+  background: #0d6efd;
+}
+
+.dates-picker .dates-list li.selected:hover {
+  background: #0b5ed7;
+}
+
+.page.dark .dates-picker .dates-list li {
+  border-bottom-color: #495057;
+}
+
+.page.dark .dates-picker .dates-list li:hover {
+  background: #495057;
+}
+
+.page.dark .dates-picker .dates-list li.selected {
+  color: #212529;
+  background: #6ea8fe;
+}
+
+.page.dark .dates-picker .dates-list li.selected:hover {
+  background: #9ec5fe;
 }
 /*# sourceMappingURL=spa.34df27b5.css.map */

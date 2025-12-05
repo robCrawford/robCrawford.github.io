@@ -719,8 +719,8 @@ parcelHelpers.defineInteropFlag(exports);
 var _pureUiActions = require("pure-ui-actions");
 var _counterPage = require("./pages/counterPage");
 var _counterPageDefault = parcelHelpers.interopDefault(_counterPage);
-var _aboutPage = require("./pages/aboutPage");
-var _aboutPageDefault = parcelHelpers.interopDefault(_aboutPage);
+var _listPage = require("./pages/listPage");
+var _listPageDefault = parcelHelpers.interopDefault(_listPage);
 var _router = require("./router");
 const { div } = (0, _pureUiActions.html);
 exports.default = (0, _pureUiActions.component)(()=>({
@@ -729,7 +729,7 @@ exports.default = (0, _pureUiActions.component)(()=>({
                 page: undefined,
                 likes: {
                     counterPage: 0,
-                    aboutPage: 0
+                    listPage: 0
                 }
             }),
         actions: {
@@ -770,10 +770,15 @@ exports.default = (0, _pureUiActions.component)(()=>({
                 })
         },
         view (id, { state }) {
-            return div(`#${id}.page.${state.theme}`, (()=>{
+            return div(`#${id}.page`, {
+                class: {
+                    light: state.theme === "light",
+                    dark: state.theme === "dark"
+                }
+            }, (()=>{
                 switch(state.page){
-                    case "aboutPage":
-                        return (0, _aboutPageDefault.default)("#about-page");
+                    case "listPage":
+                        return (0, _listPageDefault.default)("#list-page");
                     case "counterPage":
                         return (0, _counterPageDefault.default)("#counter-page");
                 }
@@ -781,8 +786,8 @@ exports.default = (0, _pureUiActions.component)(()=>({
         }
     }));
 
-},{"pure-ui-actions":"k6V0N","./pages/counterPage":"8Ln84","./pages/aboutPage":"dEdk8","./router":"4wVP1","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"k6V0N":[function(require,module,exports,__globalThis) {
-/* eslint-disable @typescript-eslint/no-explicit-any */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+},{"pure-ui-actions":"7NB7V","./pages/counterPage":"8Ln84","./pages/listPage":"4tkCQ","./router":"4wVP1","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7NB7V":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "html", ()=>(0, _vdom.html));
 parcelHelpers.export(exports, "VNode", ()=>(0, _vdom.VNode));
@@ -805,10 +810,10 @@ parcelHelpers.export(exports, "TaskThunk", ()=>(0, _pureUiActionsTypes.TaskThunk
 parcelHelpers.export(exports, "ThunkType", ()=>(0, _pureUiActionsTypes.ThunkType));
 parcelHelpers.export(exports, "getComponentRegistry", ()=>getComponentRegistry);
 parcelHelpers.export(exports, "_setTestKey", ()=>_setTestKey);
+parcelHelpers.export(exports, "_resetForTest", ()=>_resetForTest);
 parcelHelpers.export(exports, "component", ()=>component);
 parcelHelpers.export(exports, "renderComponent", ()=>renderComponent);
 parcelHelpers.export(exports, "mount", ()=>mount);
-parcelHelpers.export(exports, "withKey", ()=>withKey);
 // Pub/sub
 parcelHelpers.export(exports, "subscribe", ()=>subscribe);
 parcelHelpers.export(exports, "unsubscribe", ()=>unsubscribe);
@@ -822,26 +827,32 @@ const componentRegistry = new Map();
 const getComponentRegistry = ()=>componentRegistry;
 const actionThunkCache = new Map();
 const taskThunkCache = new Map();
-// Module-level refs to root component's creators, typed via cast when passed to components
+// Root component references
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let rootAction;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let rootTask;
 let rootState;
-let renderRootId;
+// Render cycle state
+let renderingFromRoot = false;
+let stateChanged = false;
+let noRender = 0;
+const appId = "app";
 function resetAppState() {
     componentRegistry.clear();
     actionThunkCache.clear();
     taskThunkCache.clear();
-    rootState = undefined;
-    renderRootId = undefined;
     rootAction = undefined;
     rootTask = undefined;
+    rootState = undefined;
+    renderingFromRoot = false;
+    stateChanged = false;
+    noRender = 0;
 }
-const appId = "app";
-let internalKey = {}; // Private unique value
+// Test utilities
+let internalKey = {};
 const _setTestKey = (k)=>internalKey = k;
-let noRender = 0;
-let rootStateChanged = false;
-let stateChanged = false;
+const _resetForTest = resetAppState;
 // Helper to create stable cache keys
 function createCacheKey(id, name, data) {
     const dataKey = data === null || data === undefined ? "" : JSON.stringify(data);
@@ -902,10 +913,7 @@ function executeAction(instance, actionName, data, event) {
     const currStateChanged = instance.state !== prevState;
     stateChanged = stateChanged || currStateChanged;
     (0, _log.log).updateStart(id, currStateChanged ? prevState : undefined, actionName, data, instance.state);
-    if (isRoot) {
-        rootState = instance.state;
-        rootStateChanged = currStateChanged;
-    }
+    if (isRoot) rootState = instance.state;
     if (currStateChanged && instance.state) (0, _log.log).updateEnd(instance.state);
     runNext(instance, next);
 }
@@ -958,41 +966,42 @@ function runNext(instance, next) {
         renderComponentInstance(instance);
     }
 }
-// Render function
+// Render function - always renders from root to keep vnode tree consistent
 function renderComponentInstance(instance) {
-    if (!noRender) {
-        if (rootStateChanged) {
+    if (!noRender && (stateChanged || instance.props !== instance.prevProps)) {
+        // Determine if this component should start the render cycle
+        let isRenderRoot = false;
+        if (!renderingFromRoot) {
+            // Redirect to app root if it exists and we're not it
             const rootInstance = componentRegistry.get(appId);
-            rootStateChanged = false;
-            if (rootInstance) return renderComponentInstance(rootInstance);
-        } else if (stateChanged || instance.props !== instance.prevProps) {
-            let isRenderRoot = false;
-            if (!renderRootId) {
-                renderRootId = instance.id;
-                isRenderRoot = true;
-            }
-            const prevVNode = instance.vnode;
-            instance.vnode = instance.config.view(instance.id, {
-                props: instance.props ?? {},
-                state: instance.state ?? {},
-                rootState: rootState ?? {}
-            });
-            (0, _log.log).render(instance.id, instance.props);
-            // Update global state before patch so DevTools has accurate state
-            (0, _log.log).setStateGlobal(instance.id, instance.state);
-            if (isRenderRoot && prevVNode) {
-                (0, _vdom.patch)(prevVNode, instance.vnode);
-                (0, _log.log).patch();
-                stateChanged = false;
-                renderRootId = undefined;
-                // Reset render flags
-                Array.from(componentRegistry.values()).forEach((inst)=>{
-                    inst.inCurrentRender = false;
-                });
-            }
-            if (isRenderRoot) publish("patch");
-            setRenderRef(instance);
+            if (rootInstance && !instance.isRoot) return renderComponentInstance(rootInstance);
+            // Start render cycle from this component (app root, or no app in tests)
+            renderingFromRoot = true;
+            isRenderRoot = true;
         }
+        // Mark as rendering to prevent cleanup during patch (destroy hooks may fire)
+        instance.inCurrentRender = true;
+        const prevVNode = instance.vnode;
+        instance.vnode = instance.config.view(instance.id, {
+            props: instance.props ?? {},
+            state: instance.state ?? {},
+            rootState: rootState ?? {}
+        });
+        (0, _log.log).render(instance.id, instance.props);
+        (0, _log.log).setStateGlobal(instance.id, instance.state);
+        // Only the component that started the render cycle patches the DOM
+        if (isRenderRoot && prevVNode) {
+            (0, _vdom.patch)(prevVNode, instance.vnode);
+            (0, _log.log).patch();
+            publish("patch");
+            stateChanged = false;
+            renderingFromRoot = false;
+            // Reset render flags
+            Array.from(componentRegistry.values()).forEach((inst)=>{
+                inst.inCurrentRender = false;
+            });
+        }
+        setCleanup(instance);
     }
     instance.prevProps = instance.props;
     return instance.vnode;
@@ -1071,9 +1080,26 @@ function renderComponent(id, getConfig, props) {
         rootState: rootState ?? {}
     });
     instance.prevProps = props;
-    setRenderRef(instance);
+    setCleanup(instance);
     (0, _log.log).setStateGlobal(id, instance.state);
     return instance.vnode;
+}
+function setCleanup(instance) {
+    if (!instance.vnode) return;
+    (0, _vdom.setHook)(instance.vnode, "destroy", ()=>{
+        const inst = componentRegistry.get(instance.id);
+        if (inst && !inst.inCurrentRender) {
+            componentRegistry.delete(instance.id);
+            // Clean up thunk caches
+            Array.from(actionThunkCache.keys()).forEach((key)=>{
+                if (key.startsWith(`${instance.id}:`)) actionThunkCache.delete(key);
+            });
+            Array.from(taskThunkCache.keys()).forEach((key)=>{
+                if (key.startsWith(`${instance.id}:`)) taskThunkCache.delete(key);
+            });
+            (0, _log.log).setStateGlobal(instance.id, undefined);
+        }
+    });
 }
 function mount({ app, props, init }) {
     resetAppState();
@@ -1096,30 +1122,8 @@ function mount({ app, props, init }) {
         init(runRootAction);
     }
 }
-function withKey(key, vnode) {
-    vnode.key = key;
-    return vnode;
-}
 function isDomEvent(e) {
     return Boolean(e && "eventPhase" in e && "target" in e && "type" in e);
-}
-function setRenderRef(instance) {
-    if (!instance.vnode) return;
-    (0, _vdom.setHook)(instance.vnode, "destroy", ()=>{
-        const inst = componentRegistry.get(instance.id);
-        if (inst && !inst.inCurrentRender && instance.id !== renderRootId) {
-            // Clean up registry
-            componentRegistry.delete(instance.id);
-            // Clean up thunk caches
-            Array.from(actionThunkCache.keys()).forEach((key)=>{
-                if (key.startsWith(`${instance.id}:`)) actionThunkCache.delete(key);
-            });
-            Array.from(taskThunkCache.keys()).forEach((key)=>{
-                if (key.startsWith(`${instance.id}:`)) taskThunkCache.delete(key);
-            });
-            (0, _log.log).setStateGlobal(instance.id, undefined);
-        }
-    });
 }
 function isThunk(next) {
     if (next) return !Array.isArray(next) && next.type in (0, _pureUiActionsTypes.ThunkType);
@@ -1149,7 +1153,7 @@ function publish(type, detail) {
     } : undefined));
 }
 
-},{"./vdom":"4hLWC","./log":"l6BEh","./pure-ui-actions.types":"58zSt","./component-test":"5Z9bM","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4hLWC":[function(require,module,exports,__globalThis) {
+},{"./vdom":"38jsF","./log":"72iVC","./pure-ui-actions.types":"5X1yX","./component-test":"5mY8d","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"38jsF":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "thunk", ()=>(0, _snabbdom.thunk));
@@ -1176,7 +1180,7 @@ function setHook(vnode, hookName, callback) {
     }
 }
 
-},{"snabbdom":"7JiMV","hyperscript-helpers":"dPXuE","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7JiMV":[function(require,module,exports,__globalThis) {
+},{"snabbdom":"k5Peu","hyperscript-helpers":"k7BPk","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"k5Peu":[function(require,module,exports,__globalThis) {
 // core
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -1220,7 +1224,7 @@ var _propsJs = require("./modules/props.js");
 var _styleJs = require("./modules/style.js");
 var _jsxJs = require("./jsx.js");
 
-},{"./htmldomapi.js":false,"./init.js":"8cQXk","./thunk.js":false,"./vnode.js":false,"./helpers/attachto.js":false,"./is.js":false,"./tovnode.js":false,"./h.js":"iDxS5","./hooks.js":false,"./modules/attributes.js":"ehAIS","./modules/class.js":"4MgVr","./modules/dataset.js":false,"./modules/eventlisteners.js":"3zksx","./modules/props.js":"cmJfe","./modules/style.js":false,"./jsx.js":false,"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"a36EB":[function(require,module,exports,__globalThis) {
+},{"./htmldomapi.js":false,"./init.js":"aOSIP","./thunk.js":"d42m8","./vnode.js":false,"./helpers/attachto.js":false,"./is.js":false,"./tovnode.js":false,"./h.js":"5WsB2","./hooks.js":false,"./modules/attributes.js":"j6IwF","./modules/class.js":"fB5YU","./modules/dataset.js":false,"./modules/eventlisteners.js":"6yNCj","./modules/props.js":"caLKt","./modules/style.js":false,"./jsx.js":false,"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kyV9d":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "htmlDomApi", ()=>htmlDomApi);
@@ -1362,7 +1366,7 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"8cQXk":[function(require,module,exports,__globalThis) {
+},{}],"aOSIP":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "init", ()=>init);
@@ -1647,7 +1651,7 @@ function init(modules, domApi, options) {
     };
 }
 
-},{"./vnode.js":"8dAT6","./is.js":"41mIr","./htmldomapi.js":"a36EB","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8dAT6":[function(require,module,exports,__globalThis) {
+},{"./vnode.js":"bqeAL","./is.js":"dyuJ1","./htmldomapi.js":"kyV9d","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"bqeAL":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "vnode", ()=>vnode);
@@ -1663,7 +1667,7 @@ function vnode(sel, data, children, text, elm) {
     };
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"41mIr":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dyuJ1":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "array", ()=>array);
@@ -1673,7 +1677,61 @@ function primitive(s) {
     return typeof s === "string" || typeof s === "number" || s instanceof String || s instanceof Number;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"iDxS5":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"d42m8":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "thunk", ()=>thunk);
+var _hJs = require("./h.js");
+function copyToThunk(vnode, thunk) {
+    var _a;
+    const ns = (_a = thunk.data) === null || _a === void 0 ? void 0 : _a.ns;
+    vnode.data.fn = thunk.data.fn;
+    vnode.data.args = thunk.data.args;
+    thunk.data = vnode.data;
+    thunk.children = vnode.children;
+    thunk.text = vnode.text;
+    thunk.elm = vnode.elm;
+    if (ns) (0, _hJs.addNS)(thunk.data, thunk.children, thunk.sel);
+}
+function init(thunk) {
+    const cur = thunk.data;
+    const vnode = cur.fn(...cur.args);
+    copyToThunk(vnode, thunk);
+}
+function prepatch(oldVnode, thunk) {
+    let i;
+    const old = oldVnode.data;
+    const cur = thunk.data;
+    const oldArgs = old.args;
+    const args = cur.args;
+    if (old.fn !== cur.fn || oldArgs.length !== args.length) {
+        copyToThunk(cur.fn(...args), thunk);
+        return;
+    }
+    for(i = 0; i < args.length; ++i)if (oldArgs[i] !== args[i]) {
+        copyToThunk(cur.fn(...args), thunk);
+        return;
+    }
+    copyToThunk(oldVnode, thunk);
+}
+const thunk = function thunk(sel, key, fn, args) {
+    if (args === undefined) {
+        args = fn;
+        fn = key;
+        key = undefined;
+    }
+    return (0, _hJs.h)(sel, {
+        key: key,
+        hook: {
+            init,
+            prepatch
+        },
+        fn: fn,
+        args: args
+    });
+};
+
+},{"./h.js":"5WsB2","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5WsB2":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "addNS", ()=>addNS);
@@ -1732,7 +1790,7 @@ function fragment(children) {
     return (0, _vnodeJs.vnode)(undefined, {}, c, text, undefined);
 }
 
-},{"./vnode.js":"8dAT6","./is.js":"41mIr","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"ehAIS":[function(require,module,exports,__globalThis) {
+},{"./vnode.js":"bqeAL","./is.js":"dyuJ1","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"j6IwF":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "attributesModule", ()=>attributesModule);
@@ -1778,7 +1836,7 @@ const attributesModule = {
     update: updateAttrs
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4MgVr":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"fB5YU":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "classModule", ()=>classModule);
@@ -1804,7 +1862,7 @@ const classModule = {
     update: updateClass
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"3zksx":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"6yNCj":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "eventListenersModule", ()=>eventListenersModule);
@@ -1865,7 +1923,7 @@ const eventListenersModule = {
     destroy: updateEventListeners
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cmJfe":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"caLKt":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "propsModule", ()=>propsModule);
@@ -1891,7 +1949,7 @@ const propsModule = {
     update: updateProps
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dPXuE":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"k7BPk":[function(require,module,exports,__globalThis) {
 'use strict';
 Object.defineProperty(exports, '__esModule', {
     value: true
@@ -2084,7 +2142,7 @@ exports['default'] = function(h) {
 };
 module.exports = exports['default'];
 
-},{}],"l6BEh":[function(require,module,exports,__globalThis) {
+},{}],"72iVC":[function(require,module,exports,__globalThis) {
 /* eslint-disable @typescript-eslint/no-explicit-any */ /*
 Logging for pure-ui-actions lifecycle with Redux DevTools integration
 */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -2215,7 +2273,7 @@ const log = {
         if (devToolsConnection) devToolsConnection.send({
             type: `${id}/[Task] ${label}/failure`,
             payload: {
-                error: err.message
+                error: err && typeof err === "object" && "message" in err ? err.message : String(err)
             },
             meta: {
                 isTask: true,
@@ -2268,7 +2326,7 @@ window.addEventListener("error", ()=>{
     });
 });
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"58zSt":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5X1yX":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ThunkType", ()=>ThunkType);
@@ -2278,7 +2336,7 @@ var ThunkType = /*#__PURE__*/ function(ThunkType) {
     return ThunkType;
 }({});
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5Z9bM":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5mY8d":[function(require,module,exports,__globalThis) {
 /*
 API for unit testing components
 
@@ -2364,10 +2422,10 @@ exports.default = (0, _pureUiActions.component)(({ rootTask })=>({
                         span("counter page | "),
                         a({
                             attrs: {
-                                href: "/about" + location.search,
+                                href: "/list" + location.search,
                                 "data-navigo": true
                             }
-                        }, "about page")
+                        }, "list page")
                     ]),
                     (0, _likeDefault.default)("#counter-like", {
                         page: "counterPage"
@@ -2383,7 +2441,7 @@ exports.default = (0, _pureUiActions.component)(({ rootTask })=>({
         }
     }));
 
-},{"pure-ui-actions":"k6V0N","../components/counter":"5Ydba","../components/themeMenu":"lkXYY","../components/like":"edpvh","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5Ydba":[function(require,module,exports,__globalThis) {
+},{"pure-ui-actions":"7NB7V","../components/counter":"5Ydba","../components/themeMenu":"lkXYY","../components/like":"edpvh","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5Ydba":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _pureUiActions = require("pure-ui-actions");
@@ -2478,7 +2536,7 @@ exports.default = (0, _pureUiActions.component)(({ action, task })=>({
         }
     }));
 
-},{"pure-ui-actions":"k6V0N","./notification":"hf2lb","../services/validation":"5uzyO","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hf2lb":[function(require,module,exports,__globalThis) {
+},{"pure-ui-actions":"7NB7V","./notification":"hf2lb","../services/validation":"5uzyO","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hf2lb":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _pureUiActions = require("pure-ui-actions");
@@ -2514,7 +2572,7 @@ exports.default = (0, _pureUiActions.component)(({ action })=>({
         }
     }));
 
-},{"pure-ui-actions":"k6V0N","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5uzyO":[function(require,module,exports,__globalThis) {
+},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5uzyO":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "validateCount", ()=>validateCount);
@@ -2553,15 +2611,14 @@ exports.default = (0, _pureUiActions.component)(({ rootAction })=>({
         }
     }));
 
-},{"pure-ui-actions":"k6V0N","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"edpvh":[function(require,module,exports,__globalThis) {
+},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"edpvh":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _pureUiActions = require("pure-ui-actions");
 const { button } = (0, _pureUiActions.html);
 exports.default = (0, _pureUiActions.component)(({ action, rootAction, rootTask })=>({
         actions: {
-            Like: (_, { props, state })=>{
-                return {
+            Like: (_, { props, state })=>({
                     state,
                     next: [
                         rootAction("Like", {
@@ -2571,8 +2628,7 @@ exports.default = (0, _pureUiActions.component)(({ action, rootAction, rootTask 
                             title: "You like this!"
                         })
                     ]
-                };
-            }
+                })
         },
         view: (id, { props, rootState })=>button(`#${id}.like`, {
                 on: {
@@ -2581,7 +2637,7 @@ exports.default = (0, _pureUiActions.component)(({ action, rootAction, rootTask 
             }, `\u{1F44D} ${rootState.likes[props.page]}`)
     }));
 
-},{"pure-ui-actions":"k6V0N","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dEdk8":[function(require,module,exports,__globalThis) {
+},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4tkCQ":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _pureUiActions = require("pure-ui-actions");
@@ -2589,10 +2645,12 @@ var _themeMenu = require("../components/themeMenu");
 var _themeMenuDefault = parcelHelpers.interopDefault(_themeMenu);
 var _like = require("../components/like");
 var _likeDefault = parcelHelpers.interopDefault(_like);
+var _datesList = require("../components/datesList");
+var _datesListDefault = parcelHelpers.interopDefault(_datesList);
 const { div, span, a } = (0, _pureUiActions.html);
 exports.default = (0, _pureUiActions.component)(({ rootTask })=>({
         init: rootTask("SetDocTitle", {
-            title: "About Page"
+            title: "List Page"
         }),
         view (id) {
             return div(`#${id}`, div(".content", [
@@ -2604,17 +2662,119 @@ exports.default = (0, _pureUiActions.component)(({ rootTask })=>({
                             "data-navigo": true
                         }
                     }, "counter page"),
-                    span(" | about page")
+                    span(" | list page")
                 ]),
-                (0, _likeDefault.default)("#about-like", {
-                    page: "aboutPage"
+                (0, _likeDefault.default)("#list-like", {
+                    page: "listPage"
                 }),
-                div(".intro", "This is the about page.")
+                (0, _datesListDefault.default)("#dates-list")
             ]));
         }
     }));
 
-},{"pure-ui-actions":"k6V0N","../components/themeMenu":"lkXYY","../components/like":"edpvh","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4wVP1":[function(require,module,exports,__globalThis) {
+},{"pure-ui-actions":"7NB7V","../components/themeMenu":"lkXYY","../components/like":"edpvh","../components/datesList":"6HuA9","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"6HuA9":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _pureUiActions = require("pure-ui-actions");
+const { div, input, ul, li, button } = (0, _pureUiActions.html);
+const allDates = (()=>{
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const days = new Date(year, month + 1, 0).getDate();
+    return Array.from({
+        length: days
+    }, (_, i)=>{
+        const date = new Date(year, month, i + 1);
+        return {
+            id: date.toISOString().split("T")[0],
+            label: date.toLocaleDateString("en-US", {
+                weekday: "long",
+                day: "numeric"
+            })
+        };
+    });
+})();
+const filterDates = (filter)=>filter.trim() ? allDates.filter((d)=>d.label.toLowerCase().includes(filter.toLowerCase().trim())) : allDates;
+// Memoized render function
+const renderList = (filter, selected, onClick)=>ul(".dates-list", {
+        on: {
+            click: onClick
+        }
+    }, filterDates(filter).map((d)=>li({
+            key: d.id,
+            attrs: {
+                "data-id": d.id
+            },
+            class: {
+                selected: selected === d.id
+            }
+        }, d.label)));
+exports.default = (0, _pureUiActions.component)(({ action })=>({
+        state: ()=>({
+                filterText: "",
+                selectedDate: null,
+                showInfo: true
+            }),
+        actions: {
+            SetFilter: (_, { state, event })=>({
+                    state: {
+                        ...state,
+                        filterText: event?.target?.value ?? ""
+                    }
+                }),
+            SelectDate: (_, { state, event })=>{
+                const id = event?.target?.closest("[data-id]")?.getAttribute("data-id");
+                return id && id !== state.selectedDate ? {
+                    state: {
+                        ...state,
+                        selectedDate: id
+                    }
+                } : {
+                    state
+                };
+            },
+            ToggleInfo: (_, { state })=>({
+                    state: {
+                        ...state,
+                        showInfo: !state.showInfo
+                    }
+                })
+        },
+        view (id, { state }) {
+            const filtered = filterDates(state.filterText);
+            return div(`#${id}.dates-picker`, [
+                div(".ui-row", [
+                    input(`#${id}-filter`, {
+                        props: {
+                            type: "text",
+                            value: state.filterText,
+                            placeholder: "Filter by day or date..."
+                        },
+                        on: {
+                            input: action("SetFilter")
+                        }
+                    })
+                ]),
+                div(".ui-row", [
+                    button(".help-toggle", {
+                        on: {
+                            click: action("ToggleInfo")
+                        }
+                    }, "\u24D8"),
+                    state.showInfo ? div(".dates-info", `Showing ${filtered.length} of ${allDates.length} days`) : null
+                ]),
+                // Memoized: re-renders on filter/selection change, but NOT when toggling info
+                (0, _pureUiActions.memo)("ul.dates-list", "dates-list", renderList, [
+                    state.filterText,
+                    state.selectedDate,
+                    action("SelectDate")
+                ])
+            ]);
+        }
+    }));
+
+},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4wVP1":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _pureUiActions = require("pure-ui-actions");
 var _navigo = require("navigo");
@@ -2628,14 +2788,14 @@ document.addEventListener("DOMContentLoaded", ()=>(0, _pureUiActions.mount)({
         // Manually invoking an action is an error, so `runRootAction` is provided
         // by `mount` for wiring up events to root actions (e.g. routing)
         init: (runRootAction)=>{
-            const about = ()=>runRootAction("SetPage", {
-                    page: "aboutPage"
+            const list = ()=>runRootAction("SetPage", {
+                    page: "listPage"
                 });
             const counter = ()=>runRootAction("SetPage", {
                     page: "counterPage"
                 });
             router.on({
-                about,
+                list,
                 counter,
                 "*": counter
             }).resolve();
@@ -2645,7 +2805,7 @@ document.addEventListener("DOMContentLoaded", ()=>(0, _pureUiActions.mount)({
         }
     }));
 
-},{"pure-ui-actions":"k6V0N","navigo":"1cMK4","./app":"9Fk10","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1cMK4":[function(require,module,exports,__globalThis) {
+},{"pure-ui-actions":"7NB7V","navigo":"1cMK4","./app":"9Fk10","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1cMK4":[function(require,module,exports,__globalThis) {
 !function(t, n) {
     module.exports = n();
 }("undefined" != typeof self ? self : this, function() {
