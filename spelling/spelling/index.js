@@ -3,7 +3,7 @@ import data from './data.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
-  fieldCount: 5,
+  fieldCount: 10,
   completedWordCount: 1200, // How many times to test each word
   hintCount: 1,
   completedFieldsReward: 50,
@@ -17,7 +17,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['we', 'all', 'with', 'that', 'can'];
+let tempOverrideWords = [];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
@@ -41,8 +41,10 @@ export function initSpelling() {
 
   // Words
   const allWords = deduplicate(tempOverrideWords.length ? tempOverrideWords : [
+    ...data.year1,
+    ...data.year2,
     ...data.year3,
-    ...data.year4,
+    // ...data.year4,
   ]);
   const spellingState = JSON.parse(localStorage.getItem(spellingConfig.stateName) || '{}');
   const incompleteWords = allWords.filter(word => !((spellingState[word] || 0) >= spellingConfig.completedWordCount));
