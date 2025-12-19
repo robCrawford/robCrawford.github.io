@@ -1,5 +1,6 @@
 import { deduplicate, round, speak, sentenceToId, clearComplete, pluralise } from '../utils.js';
 import data, { numberWords } from './data.js';
+import { createWordBackground } from '../word-background.js';
 
 export const multiplicationConfig = {
   stateName: 'multiplication-state',
@@ -10,7 +11,8 @@ export const multiplicationConfig = {
   redeemedKey: 'multiplication-redeemed',
   nameKey: 'spelling-name',
   uiStateKey: 'multiplication-ui-state',
-  tableSelectorKey: 'multiplication-ui-table'
+  tableSelectorKey: 'multiplication-ui-table',
+  darkModeKey: 'spelling-dark-mode'
 };
 
 let name = '';
@@ -324,6 +326,29 @@ export function initMultiplication() {
       location.reload();
     };
   });
+
+  const isDarkMode = localStorage.getItem(multiplicationConfig.darkModeKey) === 'true';
+  if (isDarkMode) {
+    document.body.classList.add('words-bg');
+    $('#dark-mode-toggle').innerHTML = '🌞';
+  } else {
+    document.body.classList.remove('words-bg');
+    $('#dark-mode-toggle').innerHTML = '🌛';
+  }
+  $('#dark-mode-toggle').onclick = () => {
+    const isCurrentlyDark = document.body.classList.toggle('words-bg');
+    $('#dark-mode-toggle').innerHTML = isCurrentlyDark ? '🌞' : '🌛';
+    localStorage.setItem(multiplicationConfig.darkModeKey, isCurrentlyDark);
+
+    if (isCurrentlyDark) {
+      createWordBackground();
+    } else {
+      const container = $('#word-background');
+      if (container) {
+        container.innerHTML = '';
+      }
+    }
+  };
 
   $('#results-link').style.display = 'block';
   $('#results-link').onclick = () => {

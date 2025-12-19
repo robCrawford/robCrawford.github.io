@@ -9,6 +9,12 @@
   <link rel="stylesheet" href="./css/spelling.css" />
 </head>
 <body>
+  <script>
+    if (localStorage.getItem('spelling-dark-mode') === 'true') {
+      document.body.classList.add('words-bg');
+    }
+  </script>
+  <div id="word-background"></div>
   <div id="main" class="spelling">
     <div id="complete-overlay"></div>
     <div id="nav"><b>Spelling</b> | <a href='./multiplication.html'>Multiplication</a> | <a class="reset-link" title="Reset" onclick="window.promptReset('spelling')">
@@ -28,6 +34,7 @@
       </a>
     </div>
     <h1 id="title"></h1>
+    <div id="dark-mode-toggle"></div>
     <div id="help-icon" class="btn btn-primary tooltip"  style="display: none">
       <img src="img/emoji-sloth.png" width="60px" height="60px" />
       <div class="balloon">

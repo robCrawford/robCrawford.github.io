@@ -1,5 +1,6 @@
 import { deduplicate, round, speak, wordToId, clearComplete } from '../utils.js';
 import data from './data.js';
+import { createWordBackground } from '../word-background.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
@@ -10,7 +11,8 @@ export const spellingConfig = {
   rewardsKey: 'spelling-rewards',
   redeemedKey: 'spelling-redeemed',
   nameKey: 'spelling-name',
-  uiStateKey: 'spelling-ui-state'
+  uiStateKey: 'spelling-ui-state',
+  darkModeKey: 'spelling-dark-mode'
 };
 
 let name = '';
@@ -233,6 +235,30 @@ export function initSpelling() {
   $('#results').innerHTML = resultsHtml;
   $('#rewards').innerHTML = rewardsText;
   $('#help-text').innerHTML = helpHtml;
+
+  const isDarkMode = localStorage.getItem(spellingConfig.darkModeKey) === 'true';
+  if (isDarkMode) {
+    document.body.classList.add('words-bg');
+    $('#dark-mode-toggle').innerHTML = '🌞';
+  } else {
+    document.body.classList.remove('words-bg');
+    $('#dark-mode-toggle').innerHTML = '🌛';
+  }
+  $('#dark-mode-toggle').onclick = () => {
+    const isCurrentlyDark = document.body.classList.toggle('words-bg');
+    $('#dark-mode-toggle').innerHTML = isCurrentlyDark ? '🌞' : '🌛';
+    localStorage.setItem(spellingConfig.darkModeKey, isCurrentlyDark);
+
+    if (isCurrentlyDark) {
+      createWordBackground();
+    } else {
+      const container = $('#word-background');
+      if (container) {
+        container.innerHTML = '';
+      }
+    }
+  };
+
   $('#results-link').style.display = 'block';
   $('#results-link').onclick = () => {
     updateResultsUI(true);

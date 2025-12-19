@@ -28,9 +28,9 @@
 }
 
 .table-button.active {
-  background-color: #4CAF50;
+  background-color: #ffb303;
   color: white;
-  border-color: #45a049;
+  border-color: #ffb303;
 }
 
 #form-fields {
