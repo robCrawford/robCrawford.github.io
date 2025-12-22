@@ -7,14 +7,7 @@
   64%  { transform: scale(1,1)      translateY(0); }
   100% { transform: scale(1,1)      translateY(0); }
 }
-@keyframes float {
-  0%, 100% {
-    transform: rotate(var(--rotation)) translateY(0);
-  }
-  50% {
-    transform: rotate(var(--rotation)) translateY(-20px);
-  }
-}
+
 body {
   position: relative;
   height: 100vh;
@@ -59,7 +52,6 @@ body {
   user-select: none;
   pointer-events: none;
   will-change: transform;
-  animation: float 20s ease-in-out infinite;
 }
 #main {
   position: relative;
