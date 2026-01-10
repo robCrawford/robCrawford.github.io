@@ -19,7 +19,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = [];
+let tempOverrideWords = ['said', 'you', 'they', 'we', 'all', 'with'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
