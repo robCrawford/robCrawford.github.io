@@ -808,7 +808,7 @@ parcelHelpers.export(exports, "Task", ()=>(0, _pureUiActionsTypes.Task));
 parcelHelpers.export(exports, "TaskHandler", ()=>(0, _pureUiActionsTypes.TaskHandler));
 parcelHelpers.export(exports, "TaskThunk", ()=>(0, _pureUiActionsTypes.TaskThunk));
 parcelHelpers.export(exports, "ThunkType", ()=>(0, _pureUiActionsTypes.ThunkType));
-parcelHelpers.export(exports, "getComponentRegistry", ()=>getComponentRegistry);
+parcelHelpers.export(exports, "componentRegistry", ()=>componentRegistry);
 parcelHelpers.export(exports, "_setTestKey", ()=>_setTestKey);
 parcelHelpers.export(exports, "_resetForTest", ()=>_resetForTest);
 parcelHelpers.export(exports, "component", ()=>component);
@@ -821,10 +821,7 @@ parcelHelpers.export(exports, "publish", ()=>publish);
 var _vdom = require("./vdom");
 var _log = require("./log");
 var _pureUiActionsTypes = require("./pure-ui-actions.types");
-var _componentTest = require("./component-test");
-parcelHelpers.exportAll(_componentTest, exports);
 const componentRegistry = new Map();
-const getComponentRegistry = ()=>componentRegistry;
 const actionThunkCache = new Map();
 const taskThunkCache = new Map();
 // Root component references
@@ -864,15 +861,11 @@ function createActionThunk(componentId, actionName, data) {
     const cached = actionThunkCache.get(cacheKey);
     if (cached) return cached;
     const actionThunk = (thunkInput)=>{
-        if (isDomEvent(thunkInput)) {
-            const instance = componentRegistry.get(componentId);
-            if (!instance) throw Error(`Component ${componentId} not found in registry`);
-            executeAction(instance, actionName, data, thunkInput);
-        } else if (thunkInput === internalKey) {
-            const instance = componentRegistry.get(componentId);
-            if (!instance) throw Error(`Component ${componentId} not found in registry`);
-            executeAction(instance, actionName, data);
-        } else (0, _log.log).manualError(componentId, actionName);
+        const instance = componentRegistry.get(componentId);
+        if (!instance) throw Error(`${componentId} not found`);
+        if (isDomEvent(thunkInput)) executeAction(instance, actionName, data, thunkInput);
+        else if (thunkInput === internalKey) executeAction(instance, actionName, data);
+        else (0, _log.log).manualError(componentId, actionName);
     };
     actionThunk.type = (0, _pureUiActionsTypes.ThunkType).Action;
     actionThunkCache.set(cacheKey, actionThunk);
@@ -884,10 +877,9 @@ function createTaskThunk(componentId, taskName, data) {
     const cached = taskThunkCache.get(cacheKey);
     if (cached) return cached;
     const taskThunk = (thunkInput)=>{
-        // Defer instance lookup until thunk is actually invoked
         if (isDomEvent(thunkInput) || thunkInput === internalKey) {
             const instance = componentRegistry.get(componentId);
-            if (!instance) throw Error(`Component ${componentId} not found in registry`);
+            if (!instance) throw Error(`${componentId} not found`);
             const result = performTask(instance, taskName, data);
             return result.then((next)=>runNext(instance, next));
         } else (0, _log.log).manualError(componentId, taskName);
@@ -902,17 +894,21 @@ function executeAction(instance, actionName, data, event) {
     const { config, state: prevState, props, isRoot, id } = instance;
     const actions = config.actions;
     if (!actions || !actions[actionName]) return;
+    const hasStateConfig = Boolean(config.state);
     let next;
     const prevStateFrozen = deepFreeze(prevState);
-    ({ state: instance.state, next } = actions[actionName](data, {
+    const actionOutput = actions[actionName](data, {
         props: props ?? {},
         state: prevStateFrozen ?? {},
         rootState: rootState ?? {},
         event
-    }));
-    const currStateChanged = instance.state !== prevState;
+    });
+    // Only update instance.state if component has state config
+    if (hasStateConfig) instance.state = actionOutput.state;
+    next = actionOutput.next;
+    const currStateChanged = hasStateConfig && instance.state !== prevState;
     stateChanged = stateChanged || currStateChanged;
-    (0, _log.log).updateStart(id, currStateChanged ? prevState : undefined, actionName, data, instance.state);
+    (0, _log.log).updateStart(id, currStateChanged ? prevState : undefined, actionName, data, instance.state, hasStateConfig);
     if (isRoot) rootState = instance.state;
     if (currStateChanged && instance.state) (0, _log.log).updateEnd(instance.state);
     runNext(instance, next);
@@ -920,7 +916,7 @@ function executeAction(instance, actionName, data, event) {
 function performTask(instance, taskName, data) {
     const { config, state, props, id } = instance;
     const tasks = config.tasks;
-    if (!tasks || !tasks[taskName]) throw Error(`Task ${taskName} not found in component ${id}`);
+    if (!tasks || !tasks[taskName]) throw Error(`Task ${taskName} not found in ${id}`);
     const { perform, success, failure } = tasks[taskName](data);
     const runSuccess = (result)=>success && success(result, {
             props: props ?? {},
@@ -953,7 +949,6 @@ function performTask(instance, taskName, data) {
         return Promise.resolve(runFailure(err));
     }
 }
-// Next executor
 function runNext(instance, next) {
     if (!next) renderComponentInstance(instance);
     else if (isThunk(next)) // Thunks may only be invoked here or from the DOM
@@ -969,13 +964,12 @@ function runNext(instance, next) {
 // Render function - always renders from root to keep vnode tree consistent
 function renderComponentInstance(instance) {
     if (!noRender && (stateChanged || instance.props !== instance.prevProps)) {
-        // Determine if this component should start the render cycle
         let isRenderRoot = false;
         if (!renderingFromRoot) {
-            // Redirect to app root if it exists and we're not it
+            // If a child component, start render from root
             const rootInstance = componentRegistry.get(appId);
             if (rootInstance && !instance.isRoot) return renderComponentInstance(rootInstance);
-            // Start render cycle from this component (app root, or no app in tests)
+            // Already root
             renderingFromRoot = true;
             isRenderRoot = true;
         }
@@ -989,7 +983,7 @@ function renderComponentInstance(instance) {
         });
         (0, _log.log).render(instance.id, instance.props);
         (0, _log.log).setStateGlobal(instance.id, instance.state);
-        // Only the component that started the render cycle patches the DOM
+        // Patch the DOM once at the root
         if (isRenderRoot && prevVNode) {
             (0, _vdom.patch)(prevVNode, instance.vnode);
             (0, _log.log).patch();
@@ -1153,7 +1147,7 @@ function publish(type, detail) {
     } : undefined));
 }
 
-},{"./vdom":"38jsF","./log":"72iVC","./pure-ui-actions.types":"5X1yX","./component-test":"5mY8d","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"38jsF":[function(require,module,exports,__globalThis) {
+},{"./vdom":"38jsF","./log":"72iVC","./pure-ui-actions.types":"5X1yX","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"38jsF":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "thunk", ()=>(0, _snabbdom.thunk));
@@ -2211,7 +2205,7 @@ const log = {
             groupId = id;
         }
     },
-    updateStart (id, state, label, data, newState) {
+    updateStart (id, state, label, data, newState, hasStateConfig) {
         // Send to Redux DevTools with current state
         if (devToolsConnection && newState !== undefined) {
             // Update window.state FIRST so subsequent getAggregatedState() calls are accurate
@@ -2235,7 +2229,7 @@ const log = {
             let msg = `${String(label)}`;
             if (data) msg += ` ${JSON.stringify(data)}`;
             console.log(`%c${msg}`, "color: #f6b");
-            if (!state) console.log(`No change`);
+            if (!state && hasStateConfig) console.log(`No change`);
         }
     },
     updateEnd (state) {
@@ -2335,69 +2329,6 @@ var ThunkType = /*#__PURE__*/ function(ThunkType) {
     ThunkType[ThunkType["Task"] = 1] = "Task";
     return ThunkType;
 }({});
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5mY8d":[function(require,module,exports,__globalThis) {
-/*
-API for unit testing components
-
-- Initialise component test API
-import counter from "./counter";
-const { initialState, actionTest, taskTest, config } = componentTest(counter, { start: 0 });
-
-- Test an action: outputs `state` and `next` results as data
-const { state, next } = actionTest("Increment", { step: 1 });
-
-- Test an action with custom state
-const { state, next } = actionTest("Increment", { step: 1 }, { state: { count: 5 } });
-
-- Test an action with rootState or event
-const { state, next } = actionTest("HandleSubmit", {}, {
-  state: customState,
-  rootState: { theme: "dark" },
-  event: mockEvent
-});
-
-- Test a task: returns `success` and `failure` callbacks for tests to invoke
-const { perform, success, failure } = taskTest("ValidateCount", { count: 0 });
-const { name, data } = success({ text: "Test" });
-*/ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "componentTest", ()=>componentTest);
-// Returns next action/task inputs as data
-const nextToData = (name, data)=>({
-        name,
-        data
-    });
-function componentTest(component, props) {
-    // Initialise component passing in `nextToData()` instead of `action()` and `task()` functions
-    const config = component.getConfig({
-        action: nextToData,
-        task: nextToData,
-        rootAction: nextToData,
-        rootTask: nextToData
-    });
-    const initialState = config.state && config.state(props);
-    return {
-        // Output from the callback passed into `component(...)`
-        config,
-        // For comparing state changes
-        initialState,
-        actionTest (name, data, options) {
-            // Returns any next operations as data
-            return config.actions[name](data, {
-                props: props ?? {},
-                state: options?.state !== undefined ? options.state : initialState ?? {},
-                rootState: options?.rootState ?? {},
-                event: options?.event
-            });
-        },
-        // Get task spec for manually testing `success` and `failure` output
-        taskTest (name, data) {
-            // Returns task spec
-            return config.tasks[name](data);
-        }
-    };
-}
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8Ln84":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
