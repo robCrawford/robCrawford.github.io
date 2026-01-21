@@ -15,16 +15,36 @@ Markdown is transformed (into `_site` directory) on push to GitHub.
 
 Dev setup
 ---------
+This project uses Docker to run Jekyll.
 
-- Install Ruby
-- Install Bundler (`gem install bundler`)
-- Install project dependencies (Jekyll)  
-`cd /path/to/project`  
-`bundle install`
+### Prerequisites
+- Docker Desktop installed and running
 
-Start Jekyll dev server, runs at `http://localhost:4000`  
-Jekyll will also watch the project directory for file changes.
-- `bundle exec jekyll serve`
+### Running the development server
+
+Start Jekyll dev server (runs at `http://localhost:4000`):
+```bash
+./run.sh
+```
+
+Jekyll will automatically watch for file changes and rebuild the site.
+
+### Stopping the server
+```bash
+docker stop $(docker ps -q --filter ancestor=jekyll/jekyll:latest)
+```
+
+### Manual Docker command
+If you prefer to run Docker directly:
+```bash
+docker run --rm \
+  --platform=linux/amd64 \
+  -p 4000:4000 \
+  -v "$PWD:/srv/jekyll" \
+  -v "$PWD/.bundle-cache:/usr/local/bundle" \
+  jekyll/jekyll:latest \
+  jekyll serve --watch --force_polling --host 0.0.0.0
+```
 
 
 Blog posts
