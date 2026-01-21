@@ -37,3 +37,8 @@ app/_bower_components
 dist
 node_modules
 .tmp
+
+# Jekyll build output #
+_site/
+.jekyll-cache/
+.jekyll-metadata

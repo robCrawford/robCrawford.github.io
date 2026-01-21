@@ -6,3 +6,12 @@ author:
   email: robcrawford@users.noreply.github.com
 kramdown:
   input: GFM
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
+  - run.sh
+  - yarn.lock
