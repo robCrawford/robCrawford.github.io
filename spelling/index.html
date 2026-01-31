@@ -10,8 +10,11 @@
 </head>
 <body>
   <script>
-    if (localStorage.getItem('spelling-dark-mode') === 'true') {
+    const backgroundMode = localStorage.getItem('spelling-background-mode') || 'default';
+    if (backgroundMode === 'words') {
       document.body.classList.add('words-bg');
+    } else if (backgroundMode === 'stars') {
+      document.body.classList.add('stars-bg');
     }
   </script>
   <div id="word-background"></div>

@@ -1,6 +1,7 @@
 import { deduplicate, round, speak, wordToId, clearComplete } from '../utils.js';
 import data from './data.js';
 import { createWordBackground } from '../word-background.js';
+import { createStarBackground, removeStarBackground } from '../star-background.js';
 
 export const spellingConfig = {
   stateName: 'spelling-state',
@@ -12,7 +13,8 @@ export const spellingConfig = {
   redeemedKey: 'spelling-redeemed',
   nameKey: 'spelling-name',
   uiStateKey: 'spelling-ui-state',
-  darkModeKey: 'spelling-dark-mode'
+  darkModeKey: 'spelling-dark-mode',
+  backgroundModeKey: 'spelling-background-mode'
 };
 
 let name = '';
@@ -236,27 +238,56 @@ export function initSpelling() {
   $('#rewards').innerHTML = rewardsText;
   $('#help-text').innerHTML = helpHtml;
 
-  const isDarkMode = localStorage.getItem(spellingConfig.darkModeKey) === 'true';
-  if (isDarkMode) {
-    document.body.classList.add('words-bg');
-    $('#dark-mode-toggle').innerHTML = '🌞';
-  } else {
-    document.body.classList.remove('words-bg');
-    $('#dark-mode-toggle').innerHTML = '🌛';
-  }
-  $('#dark-mode-toggle').onclick = () => {
-    const isCurrentlyDark = document.body.classList.toggle('words-bg');
-    $('#dark-mode-toggle').innerHTML = isCurrentlyDark ? '🌞' : '🌛';
-    localStorage.setItem(spellingConfig.darkModeKey, isCurrentlyDark);
+  const backgroundMode = localStorage.getItem(spellingConfig.backgroundModeKey) || 'default';
 
-    if (isCurrentlyDark) {
-      createWordBackground();
-    } else {
-      const container = $('#word-background');
+  const applyBackgroundMode = (mode) => {
+    const container = $('#word-background');
+
+    if (mode === 'words') {
+      document.body.classList.add('words-bg');
+      document.body.classList.remove('stars-bg');
+      removeStarBackground();
       if (container) {
         container.innerHTML = '';
       }
+      createWordBackground();
+      $('#dark-mode-toggle').innerHTML = '🌛';
+    } else if (mode === 'stars') {
+      document.body.classList.remove('words-bg');
+      document.body.classList.add('stars-bg');
+      if (container) {
+        container.innerHTML = '';
+      }
+      createStarBackground();
+      $('#dark-mode-toggle').innerHTML = '🚀';
+    } else {
+      document.body.classList.remove('words-bg');
+      document.body.classList.remove('stars-bg');
+      removeStarBackground();
+      if (container) {
+        container.innerHTML = '';
+      }
+      $('#dark-mode-toggle').innerHTML = '🌞';
     }
+  };
+
+  applyBackgroundMode(backgroundMode);
+
+  $('#dark-mode-toggle').onclick = () => {
+    let currentMode = localStorage.getItem(spellingConfig.backgroundModeKey) || 'default';
+    let nextMode;
+
+    if (currentMode === 'default') {
+      nextMode = 'words';
+    } else if (currentMode === 'words') {
+      nextMode = 'stars';
+    } else {
+      nextMode = 'default';
+    }
+
+    localStorage.setItem(spellingConfig.backgroundModeKey, nextMode);
+    localStorage.setItem(spellingConfig.darkModeKey, nextMode !== 'default');
+    applyBackgroundMode(nextMode);
   };
 
   $('#results-link').style.display = 'block';

@@ -1,6 +1,7 @@
 import { deduplicate, round, speak, sentenceToId, clearComplete, pluralise } from '../utils.js';
 import data, { numberWords } from './data.js';
 import { createWordBackground } from '../word-background.js';
+import { createStarBackground, removeStarBackground } from '../star-background.js';
 
 export const multiplicationConfig = {
   stateName: 'multiplication-state',
@@ -12,7 +13,8 @@ export const multiplicationConfig = {
   nameKey: 'spelling-name',
   uiStateKey: 'multiplication-ui-state',
   tableSelectorKey: 'multiplication-ui-table',
-  darkModeKey: 'spelling-dark-mode'
+  darkModeKey: 'spelling-dark-mode',
+  backgroundModeKey: 'spelling-background-mode'
 };
 
 let name = '';
@@ -327,27 +329,56 @@ export function initMultiplication() {
     };
   });
 
-  const isDarkMode = localStorage.getItem(multiplicationConfig.darkModeKey) === 'true';
-  if (isDarkMode) {
-    document.body.classList.add('words-bg');
-    $('#dark-mode-toggle').innerHTML = '🌞';
-  } else {
-    document.body.classList.remove('words-bg');
-    $('#dark-mode-toggle').innerHTML = '🌛';
-  }
-  $('#dark-mode-toggle').onclick = () => {
-    const isCurrentlyDark = document.body.classList.toggle('words-bg');
-    $('#dark-mode-toggle').innerHTML = isCurrentlyDark ? '🌞' : '🌛';
-    localStorage.setItem(multiplicationConfig.darkModeKey, isCurrentlyDark);
+  const backgroundMode = localStorage.getItem(multiplicationConfig.backgroundModeKey) || 'default';
 
-    if (isCurrentlyDark) {
-      createWordBackground();
-    } else {
-      const container = $('#word-background');
+  const applyBackgroundMode = (mode) => {
+    const container = $('#word-background');
+
+    if (mode === 'words') {
+      document.body.classList.add('words-bg');
+      document.body.classList.remove('stars-bg');
+      removeStarBackground();
       if (container) {
         container.innerHTML = '';
       }
+      createWordBackground();
+      $('#dark-mode-toggle').innerHTML = '🌛';
+    } else if (mode === 'stars') {
+      document.body.classList.remove('words-bg');
+      document.body.classList.add('stars-bg');
+      if (container) {
+        container.innerHTML = '';
+      }
+      createStarBackground();
+      $('#dark-mode-toggle').innerHTML = '🚀';
+    } else {
+      document.body.classList.remove('words-bg');
+      document.body.classList.remove('stars-bg');
+      removeStarBackground();
+      if (container) {
+        container.innerHTML = '';
+      }
+      $('#dark-mode-toggle').innerHTML = '🌞';
     }
+  };
+
+  applyBackgroundMode(backgroundMode);
+
+  $('#dark-mode-toggle').onclick = () => {
+    let currentMode = localStorage.getItem(multiplicationConfig.backgroundModeKey) || 'default';
+    let nextMode;
+
+    if (currentMode === 'default') {
+      nextMode = 'words';
+    } else if (currentMode === 'words') {
+      nextMode = 'stars';
+    } else {
+      nextMode = 'default';
+    }
+
+    localStorage.setItem(multiplicationConfig.backgroundModeKey, nextMode);
+    localStorage.setItem(multiplicationConfig.darkModeKey, nextMode !== 'default');
+    applyBackgroundMode(nextMode);
   };
 
   $('#results-link').style.display = 'block';

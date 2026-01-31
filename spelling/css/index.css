@@ -64,6 +64,9 @@ body {
 .words-bg #main {
   background-color: rgba(0, 0, 0, 0.4);
 }
+.stars-bg #main {
+  background-color: rgba(0, 0, 0, 0.4);
+}
 #nav {
   position: absolute;
   top: 20px;
@@ -100,6 +103,9 @@ h1 {
   margin: 60px 10px 30px 20px;
 }
 .words-bg h1 {
+  color: #fff;
+}
+.stars-bg h1 {
   color: #fff;
 }
 #title {
