@@ -16,6 +16,10 @@ body {
   margin: 0;
   font: 12px "HelveticaNeue-Light", sans-serif;
   background-color: #302f2e;
+  /* Spongebob */
+  background: url("https://i.pinimg.com/736x/d0/b6/c9/d0b6c9b579c33b5f6ea5d7e28405c7b1.jpg");
+  background-size: 40%;
+  background-position: 26% 0;
 }
 #dark-mode-toggle {
   position: absolute;
@@ -59,7 +63,9 @@ body {
   margin: 0 auto;
   min-height: 100vh;
   padding: 0 30px 0 50px;
-  background-color: #aabcc4
+  background-color: #aabcc4;
+  /* Spongebob */
+  background-color: rgba(100, 80, 140, 0.3);
 }
 .words-bg #main {
   background-color: rgba(0, 0, 0, 0.4);
