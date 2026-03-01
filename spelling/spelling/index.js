@@ -21,7 +21,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = [];
+let tempOverrideWords = ['do', 'me', 'down', 'dad', 'big', "it's", 'see', 'very', 'when', 'look'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
@@ -166,7 +166,8 @@ export function initSpelling() {
 
       $('#complete-overlay').style.left = 0;
       $('#complete-overlay').style.right = 0;
-      speak(`Awesome job ${name}! You are rocking it! Go go go`);
+      // speak(`Awesome job ${name}! You are rocking it! Go go go`);
+      speak(`Awesome job ${name}! Spongebob big guy pants ok`);
       setTimeout(() => {
         clearComplete();
       }, 3500);
