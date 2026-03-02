@@ -137,16 +137,24 @@ export function initSpelling() {
     $('#title').setAttribute('title', 'Today\'s words: ' + tempOverrideWords.join(', '));
   }
 
+function isCorrectAnswer(answer, word) {
+  const normalizeQuotes = (str) => str
+    .replace(/[\u2018\u2019]/g, "'")  // Single smart quotes
+    .replace(/[\u201C\u201D]/g, '"'); // Double smart quotes
+  return normalizeQuotes(answer) === normalizeQuotes(word);
+}
+
   function updateResults() {
     const isComplete = words.reduce((allCorrect, word) => {
       const input = $(`#${wordToId(word)}`);
       const answer = input?.value.trim();
-      let isCorrect = answer === word;
+      let isCorrect = isCorrectAnswer(answer, word);
 
       if (input.value) {
+        const lcAnswer = answer.toLowerCase();
         // Auto correct case
-        if (!isCorrect && answer.toLowerCase() === word.toLowerCase()) {
-          input.value = word;
+        if (!isCorrect && lcAnswer === word.toLowerCase()) {
+          input.value = lcAnswer;
           isCorrect = true;
         }
         input.className = isCorrect ? 'correct' : 'incorrect';
