@@ -1,0 +1,10 @@
+<!DOCTYPE html><meta charset=utf-8><title>cr-26 example SPA</title><link rel=stylesheet href=spa.dbd49e66.css><body>
+    <div id=app></div>
+    <script type=module src=spa.e6cbe6ab.js></script>
+
+    
+    <pre id=state></pre>
+    <style>pre div{background:#fff;border-radius:2px;margin:15px -10px -10px;padding:5px 10px;font:10px sans-serif}pre p{margin:2px}</style>
+    <script>document.addEventListener("patch",()=>{document.getElementById("state").innerHTML=JSON.stringify(window.state,null,4)});</script>
+  
+

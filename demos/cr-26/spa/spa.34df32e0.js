@@ -207,7 +207,7 @@
       });
     }
   }
-})({"eZFTg":[function(require,module,exports,__globalThis) {
+})({"3dtlh":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
@@ -215,7 +215,7 @@ var HMR_SERVER_PORT = 1234;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "439701173a9199ea";
 var HMR_USE_SSE = false;
-module.bundle.HMR_BUNDLE_ID = "9eacdeebc9112ede";
+module.bundle.HMR_BUNDLE_ID = "4b8ea06834df32e0";
 "use strict";
 /* global HMR_HOST, HMR_PORT, HMR_SERVER_PORT, HMR_ENV_HASH, HMR_SECURE, HMR_USE_SSE, chrome, browser, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
 import type {
@@ -713,101 +713,54 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
     }
 }
 
-},{}],"9Fk10":[function(require,module,exports,__globalThis) {
+},{}],"gH3Lb":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-var _counterPage = require("./pages/counterPage");
-var _counterPageDefault = parcelHelpers.interopDefault(_counterPage);
-var _listPage = require("./pages/listPage");
-var _listPageDefault = parcelHelpers.interopDefault(_listPage);
-var _router = require("./router");
-const { div } = (0, _pureUiActions.html);
-exports.default = (0, _pureUiActions.component)(()=>({
-        state: ()=>({
-                theme: "dark",
-                page: undefined,
-                likes: {
-                    counterPage: 0,
-                    listPage: 0
-                }
-            }),
-        actions: {
-            SetPage: ({ page }, { state })=>{
-                return {
-                    state: page === state.page ? state : {
-                        ...state,
-                        page
-                    }
-                };
-            },
-            SetTheme: ({ theme }, { state })=>{
-                return {
-                    state: theme === state.theme ? state : {
-                        ...state,
-                        theme
-                    }
-                };
-            },
-            Like: ({ page }, { state })=>{
-                return {
-                    state: {
-                        ...state,
-                        likes: {
-                            ...state.likes,
-                            [page]: state.likes[page] + 1
-                        }
-                    }
-                };
-            }
-        },
-        tasks: {
-            // Demonstrates a task that is only an effect
-            SetDocTitle: ({ title })=>({
-                    perform: ()=>{
-                        document.title = title;
-                    }
-                })
-        },
-        view (id, { state }) {
-            return div(`#${id}.page`, {
-                class: {
-                    light: state.theme === "light",
-                    dark: state.theme === "dark"
-                }
-            }, (()=>{
-                switch(state.page){
-                    case "listPage":
-                        return (0, _listPageDefault.default)("#list-page");
-                    case "counterPage":
-                        return (0, _counterPageDefault.default)("#counter-page");
-                }
-            })());
+var _cr26 = require("cr-26");
+var _navigo = require("navigo");
+var _navigoDefault = parcelHelpers.interopDefault(_navigo);
+var _app = require("./app");
+var _appDefault = parcelHelpers.interopDefault(_app);
+var _routes = require("./routes");
+const router = new (0, _navigoDefault.default)("/demos/cr-26/spa/");
+document.addEventListener("DOMContentLoaded", ()=>(0, _cr26.mount)({
+        app: (0, _appDefault.default),
+        props: {},
+        // Manually invoking an action is an error, so `runRootAction` is provided
+        // by `mount` for wiring up events to root actions (e.g. routing)
+        init: (runRootAction)=>{
+            const routeHandlers = Object.entries((0, _routes.routes)).reduce((acc, [path, handler])=>({
+                    ...acc,
+                    [path]: ()=>handler(runRootAction)
+                }), {});
+            router.on(routeHandlers).resolve();
+            (0, _cr26.subscribe)("patch", ()=>{
+                router.updatePageLinks();
+            });
         }
     }));
 
-},{"pure-ui-actions":"7NB7V","./pages/counterPage":"8Ln84","./pages/listPage":"4tkCQ","./router":"4wVP1","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7NB7V":[function(require,module,exports,__globalThis) {
+},{"cr-26":"hpQjw","navigo":"1cMK4","./app":"9Fk10","./routes":"dG47q","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hpQjw":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "html", ()=>(0, _vdom.html));
 parcelHelpers.export(exports, "VNode", ()=>(0, _vdom.VNode));
 parcelHelpers.export(exports, "memo", ()=>(0, _vdom.memo));
 parcelHelpers.export(exports, "setHook", ()=>(0, _vdom.setHook));
-parcelHelpers.export(exports, "ActionHandler", ()=>(0, _pureUiActionsTypes.ActionHandler));
-parcelHelpers.export(exports, "ActionThunk", ()=>(0, _pureUiActionsTypes.ActionThunk));
-parcelHelpers.export(exports, "Component", ()=>(0, _pureUiActionsTypes.Component));
-parcelHelpers.export(exports, "ComponentInstance", ()=>(0, _pureUiActionsTypes.ComponentInstance));
-parcelHelpers.export(exports, "Config", ()=>(0, _pureUiActionsTypes.Config));
-parcelHelpers.export(exports, "Context", ()=>(0, _pureUiActionsTypes.Context));
-parcelHelpers.export(exports, "GetActionThunk", ()=>(0, _pureUiActionsTypes.GetActionThunk));
-parcelHelpers.export(exports, "GetConfig", ()=>(0, _pureUiActionsTypes.GetConfig));
-parcelHelpers.export(exports, "GetTaskThunk", ()=>(0, _pureUiActionsTypes.GetTaskThunk));
-parcelHelpers.export(exports, "Next", ()=>(0, _pureUiActionsTypes.Next));
-parcelHelpers.export(exports, "RunAction", ()=>(0, _pureUiActionsTypes.RunAction));
-parcelHelpers.export(exports, "Task", ()=>(0, _pureUiActionsTypes.Task));
-parcelHelpers.export(exports, "TaskHandler", ()=>(0, _pureUiActionsTypes.TaskHandler));
-parcelHelpers.export(exports, "TaskThunk", ()=>(0, _pureUiActionsTypes.TaskThunk));
-parcelHelpers.export(exports, "ThunkType", ()=>(0, _pureUiActionsTypes.ThunkType));
+parcelHelpers.export(exports, "ActionHandler", ()=>(0, _cr26Types.ActionHandler));
+parcelHelpers.export(exports, "ActionThunk", ()=>(0, _cr26Types.ActionThunk));
+parcelHelpers.export(exports, "Component", ()=>(0, _cr26Types.Component));
+parcelHelpers.export(exports, "ComponentInstance", ()=>(0, _cr26Types.ComponentInstance));
+parcelHelpers.export(exports, "Config", ()=>(0, _cr26Types.Config));
+parcelHelpers.export(exports, "Context", ()=>(0, _cr26Types.Context));
+parcelHelpers.export(exports, "GetActionThunk", ()=>(0, _cr26Types.GetActionThunk));
+parcelHelpers.export(exports, "GetConfig", ()=>(0, _cr26Types.GetConfig));
+parcelHelpers.export(exports, "GetTaskThunk", ()=>(0, _cr26Types.GetTaskThunk));
+parcelHelpers.export(exports, "Next", ()=>(0, _cr26Types.Next));
+parcelHelpers.export(exports, "RunAction", ()=>(0, _cr26Types.RunAction));
+parcelHelpers.export(exports, "Task", ()=>(0, _cr26Types.Task));
+parcelHelpers.export(exports, "TaskHandler", ()=>(0, _cr26Types.TaskHandler));
+parcelHelpers.export(exports, "TaskThunk", ()=>(0, _cr26Types.TaskThunk));
+parcelHelpers.export(exports, "ThunkType", ()=>(0, _cr26Types.ThunkType));
 parcelHelpers.export(exports, "componentRegistry", ()=>componentRegistry);
 parcelHelpers.export(exports, "_setTestKey", ()=>_setTestKey);
 parcelHelpers.export(exports, "_resetForTest", ()=>_resetForTest);
@@ -820,7 +773,7 @@ parcelHelpers.export(exports, "unsubscribe", ()=>unsubscribe);
 parcelHelpers.export(exports, "publish", ()=>publish);
 var _vdom = require("./vdom");
 var _log = require("./log");
-var _pureUiActionsTypes = require("./pure-ui-actions.types");
+var _cr26Types = require("./cr-26.types");
 const componentRegistry = new Map();
 const actionThunkCache = new Map();
 const taskThunkCache = new Map();
@@ -867,7 +820,7 @@ function createActionThunk(componentId, actionName, data) {
         else if (thunkInput === internalKey) executeAction(instance, actionName, data);
         else (0, _log.log).manualError(componentId, actionName);
     };
-    actionThunk.type = (0, _pureUiActionsTypes.ThunkType).Action;
+    actionThunk.type = (0, _cr26Types.ThunkType).Action;
     actionThunkCache.set(cacheKey, actionThunk);
     return actionThunk;
 }
@@ -884,7 +837,7 @@ function createTaskThunk(componentId, taskName, data) {
             return result.then((next)=>runNext(instance, next));
         } else (0, _log.log).manualError(componentId, taskName);
     };
-    taskThunk.type = (0, _pureUiActionsTypes.ThunkType).Task;
+    taskThunk.type = (0, _cr26Types.ThunkType).Task;
     taskThunk.taskName = String(taskName);
     taskThunk.taskData = data;
     taskThunkCache.set(cacheKey, taskThunk);
@@ -1120,13 +1073,13 @@ function isDomEvent(e) {
     return Boolean(e && "eventPhase" in e && "target" in e && "type" in e);
 }
 function isThunk(next) {
-    if (next) return !Array.isArray(next) && next.type in (0, _pureUiActionsTypes.ThunkType);
+    if (next) return !Array.isArray(next) && next.type in (0, _cr26Types.ThunkType);
     return false;
 }
 function isPromise(o) {
     return Boolean(o && o.then);
 }
-function deepFreeze(o) {
+const deepFreeze = (o)=>{
     if (o) {
         Object.freeze(o);
         Object.getOwnPropertyNames(o).forEach((p)=>{
@@ -1134,7 +1087,7 @@ function deepFreeze(o) {
         });
     }
     return o;
-}
+};
 function subscribe(type, listener) {
     document.addEventListener(type, listener);
 }
@@ -1147,7 +1100,7 @@ function publish(type, detail) {
     } : undefined));
 }
 
-},{"./vdom":"38jsF","./log":"72iVC","./pure-ui-actions.types":"5X1yX","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"38jsF":[function(require,module,exports,__globalThis) {
+},{"./vdom":"7wsbh","./log":"kI17M","./cr-26.types":"cao4H","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7wsbh":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "thunk", ()=>(0, _snabbdom.thunk));
@@ -1174,7 +1127,7 @@ function setHook(vnode, hookName, callback) {
     }
 }
 
-},{"snabbdom":"k5Peu","hyperscript-helpers":"k7BPk","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"k5Peu":[function(require,module,exports,__globalThis) {
+},{"snabbdom":"1kriZ","hyperscript-helpers":"cMmRY","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1kriZ":[function(require,module,exports,__globalThis) {
 // core
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -1218,7 +1171,7 @@ var _propsJs = require("./modules/props.js");
 var _styleJs = require("./modules/style.js");
 var _jsxJs = require("./jsx.js");
 
-},{"./htmldomapi.js":false,"./init.js":"aOSIP","./thunk.js":"d42m8","./vnode.js":false,"./helpers/attachto.js":false,"./is.js":false,"./tovnode.js":false,"./h.js":"5WsB2","./hooks.js":false,"./modules/attributes.js":"j6IwF","./modules/class.js":"fB5YU","./modules/dataset.js":false,"./modules/eventlisteners.js":"6yNCj","./modules/props.js":"caLKt","./modules/style.js":false,"./jsx.js":false,"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kyV9d":[function(require,module,exports,__globalThis) {
+},{"./htmldomapi.js":false,"./init.js":"kuZhV","./thunk.js":"wNbyL","./vnode.js":false,"./helpers/attachto.js":false,"./is.js":false,"./tovnode.js":false,"./h.js":"e63yA","./hooks.js":false,"./modules/attributes.js":"ajawC","./modules/class.js":"bLtzb","./modules/dataset.js":false,"./modules/eventlisteners.js":"kTHyE","./modules/props.js":"8w6XP","./modules/style.js":false,"./jsx.js":false,"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"bHa9e":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "htmlDomApi", ()=>htmlDomApi);
@@ -1360,7 +1313,7 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"aOSIP":[function(require,module,exports,__globalThis) {
+},{}],"kuZhV":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "init", ()=>init);
@@ -1645,7 +1598,7 @@ function init(modules, domApi, options) {
     };
 }
 
-},{"./vnode.js":"bqeAL","./is.js":"dyuJ1","./htmldomapi.js":"kyV9d","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"bqeAL":[function(require,module,exports,__globalThis) {
+},{"./vnode.js":"77waJ","./is.js":"jx3qn","./htmldomapi.js":"bHa9e","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"77waJ":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "vnode", ()=>vnode);
@@ -1661,7 +1614,7 @@ function vnode(sel, data, children, text, elm) {
     };
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dyuJ1":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jx3qn":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "array", ()=>array);
@@ -1671,7 +1624,7 @@ function primitive(s) {
     return typeof s === "string" || typeof s === "number" || s instanceof String || s instanceof Number;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"d42m8":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"wNbyL":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "thunk", ()=>thunk);
@@ -1725,7 +1678,7 @@ const thunk = function thunk(sel, key, fn, args) {
     });
 };
 
-},{"./h.js":"5WsB2","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5WsB2":[function(require,module,exports,__globalThis) {
+},{"./h.js":"e63yA","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"e63yA":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "addNS", ()=>addNS);
@@ -1784,7 +1737,7 @@ function fragment(children) {
     return (0, _vnodeJs.vnode)(undefined, {}, c, text, undefined);
 }
 
-},{"./vnode.js":"bqeAL","./is.js":"dyuJ1","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"j6IwF":[function(require,module,exports,__globalThis) {
+},{"./vnode.js":"77waJ","./is.js":"jx3qn","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"ajawC":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "attributesModule", ()=>attributesModule);
@@ -1830,7 +1783,7 @@ const attributesModule = {
     update: updateAttrs
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"fB5YU":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"bLtzb":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "classModule", ()=>classModule);
@@ -1856,7 +1809,7 @@ const classModule = {
     update: updateClass
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"6yNCj":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kTHyE":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "eventListenersModule", ()=>eventListenersModule);
@@ -1917,7 +1870,7 @@ const eventListenersModule = {
     destroy: updateEventListeners
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"caLKt":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8w6XP":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "propsModule", ()=>propsModule);
@@ -1943,7 +1896,7 @@ const propsModule = {
     update: updateProps
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"k7BPk":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cMmRY":[function(require,module,exports,__globalThis) {
 'use strict';
 Object.defineProperty(exports, '__esModule', {
     value: true
@@ -2136,9 +2089,9 @@ exports['default'] = function(h) {
 };
 module.exports = exports['default'];
 
-},{}],"72iVC":[function(require,module,exports,__globalThis) {
+},{}],"kI17M":[function(require,module,exports,__globalThis) {
 /* eslint-disable @typescript-eslint/no-explicit-any */ /*
-Logging for pure-ui-actions lifecycle with Redux DevTools integration
+Logging for cr-26 lifecycle with Redux DevTools integration
 */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "log", ()=>log);
@@ -2153,7 +2106,7 @@ if (typeof window !== "undefined") {
     const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
     if (devToolsExtension) {
         devToolsConnection = devToolsExtension.connect({
-            name: "pure-ui-actions App",
+            name: "cr-26 App",
             features: {
                 jump: false,
                 skip: false,
@@ -2320,7 +2273,7 @@ window.addEventListener("error", ()=>{
     });
 });
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5X1yX":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cao4H":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ThunkType", ()=>ThunkType);
@@ -2330,413 +2283,7 @@ var ThunkType = /*#__PURE__*/ function(ThunkType) {
     return ThunkType;
 }({});
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8Ln84":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-var _counter = require("../components/counter");
-var _counterDefault = parcelHelpers.interopDefault(_counter);
-var _themeMenu = require("../components/themeMenu");
-var _themeMenuDefault = parcelHelpers.interopDefault(_themeMenu);
-var _like = require("../components/like");
-var _likeDefault = parcelHelpers.interopDefault(_like);
-const { div, span, a } = (0, _pureUiActions.html);
-exports.default = (0, _pureUiActions.component)(({ rootTask })=>({
-        init: rootTask("SetDocTitle", {
-            title: "Counter Page"
-        }),
-        view (id) {
-            return div(`#${id}`, [
-                div(".content", [
-                    (0, _themeMenuDefault.default)("#theme-menu"),
-                    div(".nav", [
-                        span("counter page | "),
-                        a({
-                            attrs: {
-                                href: "/list" + location.search,
-                                "data-navigo": true
-                            }
-                        }, "list page")
-                    ]),
-                    (0, _likeDefault.default)("#counter-like", {
-                        page: "counterPage"
-                    })
-                ]),
-                (0, _counterDefault.default)("#counter-0", {
-                    start: 0
-                }),
-                (0, _counterDefault.default)("#counter-1", {
-                    start: -1
-                })
-            ]);
-        }
-    }));
-
-},{"pure-ui-actions":"7NB7V","../components/counter":"5Ydba","../components/themeMenu":"lkXYY","../components/like":"edpvh","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5Ydba":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-var _notification = require("./notification");
-var _notificationDefault = parcelHelpers.interopDefault(_notification);
-var _validation = require("../services/validation");
-const { div, button } = (0, _pureUiActions.html);
-exports.default = (0, _pureUiActions.component)(({ action, task })=>({
-        state: (props)=>({
-                counter: props.start,
-                feedback: ""
-            }),
-        init: action("Validate"),
-        actions: {
-            Increment: ({ step }, { state })=>{
-                return {
-                    state: {
-                        ...state,
-                        counter: state.counter + step
-                    },
-                    next: action("Validate")
-                };
-            },
-            Decrement: ({ step }, { state })=>{
-                return {
-                    state: {
-                        ...state,
-                        counter: state.counter - step
-                    },
-                    next: action("Validate")
-                };
-            },
-            Validate: (_, { state })=>{
-                return {
-                    state,
-                    next: [
-                        action("SetFeedback", {
-                            text: "Validating..."
-                        }),
-                        // An async task
-                        task("ValidateCount", {
-                            count: state.counter
-                        })
-                    ]
-                };
-            },
-            SetFeedback: ({ text }, { state })=>{
-                return {
-                    state: text === state.feedback ? state : {
-                        ...state,
-                        feedback: text
-                    }
-                };
-            }
-        },
-        tasks: {
-            ValidateCount: ({ count })=>{
-                return {
-                    perform: ()=>(0, _validation.validateCount)(count),
-                    success: (result)=>action("SetFeedback", result),
-                    failure: ()=>action("SetFeedback", {
-                            text: "Unavailable"
-                        })
-                };
-            }
-        },
-        view (id, { state }) {
-            return div(`#${id}.counter`, [
-                button({
-                    on: {
-                        click: action("Increment", {
-                            step: 1
-                        })
-                    }
-                }, "+"),
-                div(String(state.counter)),
-                button({
-                    on: {
-                        click: action("Decrement", {
-                            step: 1
-                        })
-                    }
-                }, "-"),
-                // Child component - `notification` module
-                (0, _notificationDefault.default)(`#${id}-feedback`, {
-                    text: state.feedback,
-                    onDismiss: action("SetFeedback", {
-                        text: ""
-                    })
-                })
-            ]);
-        }
-    }));
-
-},{"pure-ui-actions":"7NB7V","./notification":"hf2lb","../services/validation":"5uzyO","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hf2lb":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-const { div, button } = (0, _pureUiActions.html);
-exports.default = (0, _pureUiActions.component)(({ action })=>({
-        state: ()=>({
-                show: true
-            }),
-        actions: {
-            Dismiss: (_, { props, state })=>{
-                return {
-                    state: {
-                        ...state,
-                        show: false
-                    },
-                    next: props.onDismiss
-                };
-            }
-        },
-        view (id, { props, state }) {
-            return div(`#${id}.notification`, {
-                class: {
-                    show: state.show && props.text.length
-                }
-            }, [
-                props.text,
-                button({
-                    on: {
-                        click: action("Dismiss")
-                    }
-                }, "Dismiss")
-            ]);
-        }
-    }));
-
-},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5uzyO":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "validateCount", ()=>validateCount);
-function validateCount(num) {
-    return new Promise((resolve)=>{
-        // Mock async
-        setTimeout(()=>resolve({
-                text: num % 2 === 0 ? "\u2713 Even" : "x Odd"
-            }), 500);
-    });
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"lkXYY":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-const { div, button } = (0, _pureUiActions.html);
-exports.default = (0, _pureUiActions.component)(({ rootAction })=>({
-        view (id) {
-            return div(`#${id}`, [
-                button({
-                    on: {
-                        click: rootAction("SetTheme", {
-                            theme: "light"
-                        })
-                    }
-                }, "Light theme"),
-                button({
-                    on: {
-                        click: rootAction("SetTheme", {
-                            theme: "dark"
-                        })
-                    }
-                }, "Dark theme")
-            ]);
-        }
-    }));
-
-},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"edpvh":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-const { button } = (0, _pureUiActions.html);
-exports.default = (0, _pureUiActions.component)(({ action, rootAction, rootTask })=>({
-        actions: {
-            Like: (_, { props, state })=>({
-                    state,
-                    next: [
-                        rootAction("Like", {
-                            page: props.page
-                        }),
-                        rootTask("SetDocTitle", {
-                            title: "You like this!"
-                        })
-                    ]
-                })
-        },
-        view: (id, { props, rootState })=>button(`#${id}.like`, {
-                on: {
-                    click: action("Like")
-                }
-            }, `\u{1F44D} ${rootState.likes[props.page]}`)
-    }));
-
-},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4tkCQ":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-var _themeMenu = require("../components/themeMenu");
-var _themeMenuDefault = parcelHelpers.interopDefault(_themeMenu);
-var _like = require("../components/like");
-var _likeDefault = parcelHelpers.interopDefault(_like);
-var _datesList = require("../components/datesList");
-var _datesListDefault = parcelHelpers.interopDefault(_datesList);
-const { div, span, a } = (0, _pureUiActions.html);
-exports.default = (0, _pureUiActions.component)(({ rootTask })=>({
-        init: rootTask("SetDocTitle", {
-            title: "List Page"
-        }),
-        view (id) {
-            return div(`#${id}`, div(".content", [
-                (0, _themeMenuDefault.default)("#theme-menu"),
-                div(".nav", [
-                    a({
-                        attrs: {
-                            href: "/counter" + location.search,
-                            "data-navigo": true
-                        }
-                    }, "counter page"),
-                    span(" | list page")
-                ]),
-                (0, _likeDefault.default)("#list-like", {
-                    page: "listPage"
-                }),
-                (0, _datesListDefault.default)("#dates-list")
-            ]));
-        }
-    }));
-
-},{"pure-ui-actions":"7NB7V","../components/themeMenu":"lkXYY","../components/like":"edpvh","../components/datesList":"6HuA9","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"6HuA9":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pureUiActions = require("pure-ui-actions");
-const { div, input, ul, li, button } = (0, _pureUiActions.html);
-const allDates = (()=>{
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const days = new Date(year, month + 1, 0).getDate();
-    return Array.from({
-        length: days
-    }, (_, i)=>{
-        const date = new Date(year, month, i + 1);
-        return {
-            id: date.toISOString().split("T")[0],
-            label: date.toLocaleDateString("en-US", {
-                weekday: "long",
-                day: "numeric"
-            })
-        };
-    });
-})();
-const filterDates = (filter)=>filter.trim() ? allDates.filter((d)=>d.label.toLowerCase().includes(filter.toLowerCase().trim())) : allDates;
-// Memoized render function
-const renderList = (filter, selected, onClick)=>ul(".dates-list", {
-        on: {
-            click: onClick
-        }
-    }, filterDates(filter).map((d)=>li({
-            key: d.id,
-            attrs: {
-                "data-id": d.id
-            },
-            class: {
-                selected: selected === d.id
-            }
-        }, d.label)));
-exports.default = (0, _pureUiActions.component)(({ action })=>({
-        state: ()=>({
-                filterText: "",
-                selectedDate: null,
-                showInfo: true
-            }),
-        actions: {
-            SetFilter: (_, { state, event })=>({
-                    state: {
-                        ...state,
-                        filterText: event?.target?.value ?? ""
-                    }
-                }),
-            SelectDate: (_, { state, event })=>{
-                const id = event?.target?.closest("[data-id]")?.getAttribute("data-id");
-                return id && id !== state.selectedDate ? {
-                    state: {
-                        ...state,
-                        selectedDate: id
-                    }
-                } : {
-                    state
-                };
-            },
-            ToggleInfo: (_, { state })=>({
-                    state: {
-                        ...state,
-                        showInfo: !state.showInfo
-                    }
-                })
-        },
-        view (id, { state }) {
-            const filtered = filterDates(state.filterText);
-            return div(`#${id}.dates-picker`, [
-                div(".ui-row", [
-                    input(`#${id}-filter`, {
-                        props: {
-                            type: "text",
-                            value: state.filterText,
-                            placeholder: "Filter by day or date..."
-                        },
-                        on: {
-                            input: action("SetFilter")
-                        }
-                    })
-                ]),
-                div(".ui-row", [
-                    button(".help-toggle", {
-                        on: {
-                            click: action("ToggleInfo")
-                        }
-                    }, "\u24D8"),
-                    state.showInfo ? div(".dates-info", `Showing ${filtered.length} of ${allDates.length} days`) : null
-                ]),
-                // Memoized: re-renders on filter/selection change, but NOT when toggling info
-                (0, _pureUiActions.memo)("ul.dates-list", "dates-list", renderList, [
-                    state.filterText,
-                    state.selectedDate,
-                    action("SelectDate")
-                ])
-            ]);
-        }
-    }));
-
-},{"pure-ui-actions":"7NB7V","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4wVP1":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-var _pureUiActions = require("pure-ui-actions");
-var _navigo = require("navigo");
-var _navigoDefault = parcelHelpers.interopDefault(_navigo);
-var _app = require("./app");
-var _appDefault = parcelHelpers.interopDefault(_app);
-const router = new (0, _navigoDefault.default)("/demos/pure-ui-actions/spa/");
-document.addEventListener("DOMContentLoaded", ()=>(0, _pureUiActions.mount)({
-        app: (0, _appDefault.default),
-        props: {},
-        // Manually invoking an action is an error, so `runRootAction` is provided
-        // by `mount` for wiring up events to root actions (e.g. routing)
-        init: (runRootAction)=>{
-            const list = ()=>runRootAction("SetPage", {
-                    page: "listPage"
-                });
-            const counter = ()=>runRootAction("SetPage", {
-                    page: "counterPage"
-                });
-            router.on({
-                list,
-                counter,
-                "*": counter
-            }).resolve();
-            (0, _pureUiActions.subscribe)("patch", ()=>{
-                router.updatePageLinks();
-            });
-        }
-    }));
-
-},{"pure-ui-actions":"7NB7V","navigo":"1cMK4","./app":"9Fk10","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1cMK4":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1cMK4":[function(require,module,exports,__globalThis) {
 !function(t, n) {
     module.exports = n();
 }("undefined" != typeof self ? self : this, function() {
@@ -3255,6 +2802,469 @@ document.addEventListener("DOMContentLoaded", ()=>(0, _pureUiActions.mount)({
     }().default;
 });
 
-},{}]},["eZFTg","9Fk10"], "9Fk10", "parcelRequiree1d7", {})
+},{}],"9Fk10":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+var _counterPage = require("./pages/counterPage");
+var _counterPageDefault = parcelHelpers.interopDefault(_counterPage);
+var _listPage = require("./pages/listPage");
+var _listPageDefault = parcelHelpers.interopDefault(_listPage);
+const { div } = (0, _cr26.html);
+exports.default = (0, _cr26.component)(()=>({
+        state: ()=>({
+                theme: "dark",
+                page: undefined,
+                likes: {
+                    counterPage: 0,
+                    listPage: 0
+                }
+            }),
+        actions: {
+            SetPage: ({ page }, { state })=>{
+                return {
+                    state: page === state.page ? state : {
+                        ...state,
+                        page
+                    }
+                };
+            },
+            SetTheme: ({ theme }, { state })=>{
+                return {
+                    state: theme === state.theme ? state : {
+                        ...state,
+                        theme
+                    }
+                };
+            },
+            Like: ({ page }, { state })=>{
+                return {
+                    state: {
+                        ...state,
+                        likes: {
+                            ...state.likes,
+                            [page]: state.likes[page] + 1
+                        }
+                    }
+                };
+            }
+        },
+        tasks: {
+            // Demonstrates a task that is only an effect
+            SetDocTitle: ({ title })=>({
+                    perform: ()=>{
+                        document.title = title;
+                    }
+                })
+        },
+        view (id, { state }) {
+            return div(`#${id}.page`, {
+                class: {
+                    light: state.theme === "light",
+                    dark: state.theme === "dark"
+                }
+            }, (()=>{
+                switch(state.page){
+                    case "listPage":
+                        return (0, _listPageDefault.default)("#list-page");
+                    case "counterPage":
+                        return (0, _counterPageDefault.default)("#counter-page");
+                }
+            })());
+        }
+    }));
 
-//# sourceMappingURL=spa.c9112ede.js.map
+},{"cr-26":"hpQjw","./pages/counterPage":"8Ln84","./pages/listPage":"4tkCQ","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8Ln84":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+var _counter = require("../components/counter");
+var _counterDefault = parcelHelpers.interopDefault(_counter);
+var _themeMenu = require("../components/themeMenu");
+var _themeMenuDefault = parcelHelpers.interopDefault(_themeMenu);
+var _like = require("../components/like");
+var _likeDefault = parcelHelpers.interopDefault(_like);
+const { div, span, a } = (0, _cr26.html);
+exports.default = (0, _cr26.component)(({ rootTask })=>({
+        init: rootTask("SetDocTitle", {
+            title: "Counter Page"
+        }),
+        view (id) {
+            return div(`#${id}`, [
+                div(".content", [
+                    (0, _themeMenuDefault.default)("#theme-menu"),
+                    div(".nav", [
+                        span("counter page | "),
+                        a({
+                            attrs: {
+                                href: "/list" + location.search,
+                                "data-navigo": true
+                            }
+                        }, "list page")
+                    ]),
+                    (0, _likeDefault.default)("#counter-like", {
+                        page: "counterPage"
+                    })
+                ]),
+                (0, _counterDefault.default)("#counter-0", {
+                    start: 0
+                }),
+                (0, _counterDefault.default)("#counter-1", {
+                    start: -1
+                })
+            ]);
+        }
+    }));
+
+},{"cr-26":"hpQjw","../components/counter":"5Ydba","../components/themeMenu":"lkXYY","../components/like":"edpvh","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5Ydba":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+var _notification = require("./notification");
+var _notificationDefault = parcelHelpers.interopDefault(_notification);
+var _validation = require("../services/validation");
+const { div, button } = (0, _cr26.html);
+exports.default = (0, _cr26.component)(({ action, task })=>({
+        state: (props)=>({
+                counter: props.start,
+                feedback: ""
+            }),
+        init: action("Validate"),
+        actions: {
+            Increment: ({ step }, { state })=>{
+                return {
+                    state: {
+                        ...state,
+                        counter: state.counter + step
+                    },
+                    next: action("Validate")
+                };
+            },
+            Decrement: ({ step }, { state })=>{
+                return {
+                    state: {
+                        ...state,
+                        counter: state.counter - step
+                    },
+                    next: action("Validate")
+                };
+            },
+            Validate: (_, { state })=>{
+                return {
+                    state,
+                    next: [
+                        action("SetFeedback", {
+                            text: "Validating..."
+                        }),
+                        // An async task
+                        task("ValidateCount", {
+                            count: state.counter
+                        })
+                    ]
+                };
+            },
+            SetFeedback: ({ text }, { state })=>{
+                return {
+                    state: text === state.feedback ? state : {
+                        ...state,
+                        feedback: text
+                    }
+                };
+            }
+        },
+        tasks: {
+            ValidateCount: ({ count })=>{
+                return {
+                    perform: ()=>(0, _validation.validateCount)(count),
+                    success: (result)=>action("SetFeedback", result),
+                    failure: ()=>action("SetFeedback", {
+                            text: "Unavailable"
+                        })
+                };
+            }
+        },
+        view (id, { state }) {
+            return div(`#${id}.counter`, [
+                button({
+                    on: {
+                        click: action("Increment", {
+                            step: 1
+                        })
+                    }
+                }, "+"),
+                div(String(state.counter)),
+                button({
+                    on: {
+                        click: action("Decrement", {
+                            step: 1
+                        })
+                    }
+                }, "-"),
+                // Child component - `notification` module
+                (0, _notificationDefault.default)(`#${id}-feedback`, {
+                    text: state.feedback,
+                    onDismiss: action("SetFeedback", {
+                        text: ""
+                    })
+                })
+            ]);
+        }
+    }));
+
+},{"cr-26":"hpQjw","./notification":"hf2lb","../services/validation":"5uzyO","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hf2lb":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+const { div, button } = (0, _cr26.html);
+exports.default = (0, _cr26.component)(({ action })=>({
+        state: ()=>({
+                show: true
+            }),
+        actions: {
+            Dismiss: (_, { props, state })=>{
+                return {
+                    state: {
+                        ...state,
+                        show: false
+                    },
+                    next: props.onDismiss
+                };
+            }
+        },
+        view (id, { props, state }) {
+            return div(`#${id}.notification`, {
+                class: {
+                    show: state.show && props.text.length
+                }
+            }, [
+                props.text,
+                button({
+                    on: {
+                        click: action("Dismiss")
+                    }
+                }, "Dismiss")
+            ]);
+        }
+    }));
+
+},{"cr-26":"hpQjw","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5uzyO":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "validateCount", ()=>validateCount);
+function validateCount(num) {
+    return new Promise((resolve)=>{
+        // Mock async
+        setTimeout(()=>resolve({
+                text: num % 2 === 0 ? "\u2713 Even" : "x Odd"
+            }), 500);
+    });
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"lkXYY":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+const { div, button } = (0, _cr26.html);
+exports.default = (0, _cr26.component)(({ rootAction })=>({
+        view (id) {
+            return div(`#${id}`, [
+                button({
+                    on: {
+                        click: rootAction("SetTheme", {
+                            theme: "light"
+                        })
+                    }
+                }, "Light theme"),
+                button({
+                    on: {
+                        click: rootAction("SetTheme", {
+                            theme: "dark"
+                        })
+                    }
+                }, "Dark theme")
+            ]);
+        }
+    }));
+
+},{"cr-26":"hpQjw","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"edpvh":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+const { button } = (0, _cr26.html);
+exports.default = (0, _cr26.component)(({ action, rootAction, rootTask })=>({
+        actions: {
+            Like: (_, { props, state })=>({
+                    state,
+                    next: [
+                        rootAction("Like", {
+                            page: props.page
+                        }),
+                        rootTask("SetDocTitle", {
+                            title: "You like this!"
+                        })
+                    ]
+                })
+        },
+        view: (id, { props, rootState })=>button(`#${id}.like`, {
+                on: {
+                    click: action("Like")
+                }
+            }, `\u{1F44D} ${rootState.likes[props.page]}`)
+    }));
+
+},{"cr-26":"hpQjw","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4tkCQ":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+var _themeMenu = require("../components/themeMenu");
+var _themeMenuDefault = parcelHelpers.interopDefault(_themeMenu);
+var _like = require("../components/like");
+var _likeDefault = parcelHelpers.interopDefault(_like);
+var _datesList = require("../components/datesList");
+var _datesListDefault = parcelHelpers.interopDefault(_datesList);
+const { div, span, a } = (0, _cr26.html);
+exports.default = (0, _cr26.component)(({ rootTask })=>({
+        init: rootTask("SetDocTitle", {
+            title: "List Page"
+        }),
+        view (id) {
+            return div(`#${id}`, div(".content", [
+                (0, _themeMenuDefault.default)("#theme-menu"),
+                div(".nav", [
+                    a({
+                        attrs: {
+                            href: "/counter" + location.search,
+                            "data-navigo": true
+                        }
+                    }, "counter page"),
+                    span(" | list page")
+                ]),
+                (0, _likeDefault.default)("#list-like", {
+                    page: "listPage"
+                }),
+                (0, _datesListDefault.default)("#dates-list")
+            ]));
+        }
+    }));
+
+},{"cr-26":"hpQjw","../components/themeMenu":"lkXYY","../components/like":"edpvh","../components/datesList":"6HuA9","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"6HuA9":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cr26 = require("cr-26");
+const { div, input, ul, li, button } = (0, _cr26.html);
+const allDates = (()=>{
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const days = new Date(year, month + 1, 0).getDate();
+    return Array.from({
+        length: days
+    }, (_, i)=>{
+        const date = new Date(year, month, i + 1);
+        return {
+            id: date.toISOString().split("T")[0],
+            label: date.toLocaleDateString("en-US", {
+                weekday: "long",
+                day: "numeric"
+            })
+        };
+    });
+})();
+const filterDates = (filter)=>filter.trim() ? allDates.filter((d)=>d.label.toLowerCase().includes(filter.toLowerCase().trim())) : allDates;
+// Memoized render function
+const renderList = (filter, selected, onClick)=>ul(".dates-list", {
+        on: {
+            click: onClick
+        }
+    }, filterDates(filter).map((d)=>li({
+            key: d.id,
+            attrs: {
+                "data-id": d.id
+            },
+            class: {
+                selected: selected === d.id
+            }
+        }, d.label)));
+exports.default = (0, _cr26.component)(({ action })=>({
+        state: ()=>({
+                filterText: "",
+                selectedDate: null,
+                showInfo: true
+            }),
+        actions: {
+            SetFilter: (_, { state, event })=>({
+                    state: {
+                        ...state,
+                        filterText: event?.target?.value ?? ""
+                    }
+                }),
+            SelectDate: (_, { state, event })=>{
+                const id = event?.target?.closest("[data-id]")?.getAttribute("data-id");
+                return id && id !== state.selectedDate ? {
+                    state: {
+                        ...state,
+                        selectedDate: id
+                    }
+                } : {
+                    state
+                };
+            },
+            ToggleInfo: (_, { state })=>({
+                    state: {
+                        ...state,
+                        showInfo: !state.showInfo
+                    }
+                })
+        },
+        view (id, { state }) {
+            const filtered = filterDates(state.filterText);
+            return div(`#${id}.dates-picker`, [
+                div(".ui-row", [
+                    input(`#${id}-filter`, {
+                        props: {
+                            type: "text",
+                            value: state.filterText,
+                            placeholder: "Filter by day or date..."
+                        },
+                        on: {
+                            input: action("SetFilter")
+                        }
+                    })
+                ]),
+                div(".ui-row", [
+                    button(".help-toggle", {
+                        on: {
+                            click: action("ToggleInfo")
+                        }
+                    }, "\u24D8"),
+                    state.showInfo ? div(".dates-info", `Showing ${filtered.length} of ${allDates.length} days`) : null
+                ]),
+                // Memoized: re-renders on filter/selection change, but NOT when toggling info
+                (0, _cr26.memo)("ul.dates-list", "dates-list", renderList, [
+                    state.filterText,
+                    state.selectedDate,
+                    action("SelectDate")
+                ])
+            ]);
+        }
+    }));
+
+},{"cr-26":"hpQjw","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dG47q":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "routes", ()=>routes);
+const routes = {
+    list: (runRootAction)=>runRootAction("SetPage", {
+            page: "listPage"
+        }),
+    counter: (runRootAction)=>runRootAction("SetPage", {
+            page: "counterPage"
+        }),
+    "*": (runRootAction)=>runRootAction("SetPage", {
+            page: "counterPage"
+        })
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["3dtlh","gH3Lb"], "gH3Lb", "parcelRequirec0d6", {})
+
+//# sourceMappingURL=spa.34df32e0.js.map
