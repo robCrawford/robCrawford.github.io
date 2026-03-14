@@ -154,7 +154,7 @@ function isCorrectAnswer(answer, word) {
         const lcAnswer = answer.toLowerCase();
         // Auto correct case
         if (!isCorrect && lcAnswer === word.toLowerCase()) {
-          input.value = lcAnswer;
+          input.value = word;
           isCorrect = true;
         }
         input.className = isCorrect ? 'correct' : 'incorrect';
