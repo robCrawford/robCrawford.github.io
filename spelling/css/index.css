@@ -16,10 +16,11 @@ body {
   margin: 0;
   font: 12px "HelveticaNeue-Light", sans-serif;
   background-color: #302f2e;
-  /* Spongebob */
-  background: url("https://i.pinimg.com/736x/d0/b6/c9/d0b6c9b579c33b5f6ea5d7e28405c7b1.jpg");
-  background-size: 40%;
-  background-position: 26% 0;
+  /* Light theme */
+  background: url("https://4kwallpapers.com/images/walls/thumbs_3t/8945.jpg");
+  background-size: 100%;
+  background-position: 0 0;
+  background-size: cover;
 }
 #dark-mode-toggle {
   position: absolute;
@@ -64,7 +65,7 @@ body {
   min-height: 100vh;
   padding: 0 30px 0 50px;
   background-color: #aabcc4;
-  /* Spongebob */
+  /* Light theme */
   background-color: rgba(100, 80, 140, 0.3);
 }
 .words-bg #main {
@@ -105,7 +106,8 @@ h1 {
   display: inline-block;
   font-size: 50px;
   font-weight: normal;
-  color: #2b4957;
+  /* color: #2b4957; */
+  color: #e2dfef;
   margin: 60px 10px 30px 20px;
 }
 .words-bg h1 {

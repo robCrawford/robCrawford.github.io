@@ -21,7 +21,7 @@ let name = '';
 
 // Entries here will be the only words tested
 // NOTE: update fieldCount for rewards calculation!
-let tempOverrideWords = ['him', 'will', 'come', "don't", 'into', 'when'];
+let tempOverrideWords = ['from', 'children', 'Mr', 'back', 'looked', 'when'];
 
 // Clear local storage prior to latest key
 // NOTE: changing this removes all previous data from the browser!
@@ -174,8 +174,7 @@ function isCorrectAnswer(answer, word) {
 
       $('#complete-overlay').style.left = 0;
       $('#complete-overlay').style.right = 0;
-      // speak(`Awesome job ${name}! You are rocking it! Go go go`);
-      speak(`Awesome job ${name}! Spongebob big guy pants ok`);
+      speak(`Awesome job ${name}! You are rocking it! Go go go`);
       setTimeout(() => {
         clearComplete();
       }, 3500);
