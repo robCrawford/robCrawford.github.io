@@ -815,7 +815,8 @@ function createActionThunk(componentId, actionName, data) {
     if (cached) return cached;
     const actionThunk = (thunkInput)=>{
         const instance = componentRegistry.get(componentId);
-        if (!instance) throw Error(`${componentId} not found`);
+        if (!instance) // Component was unmounted - silently ignore (expected for async task callbacks)
+        return;
         if (isDomEvent(thunkInput)) executeAction(instance, actionName, data, thunkInput);
         else if (thunkInput === internalKey) executeAction(instance, actionName, data);
         else (0, _log.log).manualError(componentId, actionName);
@@ -832,7 +833,8 @@ function createTaskThunk(componentId, taskName, data) {
     const taskThunk = (thunkInput)=>{
         if (isDomEvent(thunkInput) || thunkInput === internalKey) {
             const instance = componentRegistry.get(componentId);
-            if (!instance) throw Error(`${componentId} not found`);
+            if (!instance) // Component was unmounted - silently ignore (expected for async operations)
+            return Promise.resolve();
             const result = performTask(instance, taskName, data);
             return result.then((next)=>runNext(instance, next));
         } else (0, _log.log).manualError(componentId, taskName);
@@ -903,6 +905,9 @@ function performTask(instance, taskName, data) {
     }
 }
 function runNext(instance, next) {
+    // Check if component still exists before processing next
+    if (!componentRegistry.has(instance.id)) // Component was unmounted - silently ignore
+    return;
     if (!next) renderComponentInstance(instance);
     else if (isThunk(next)) // Thunks may only be invoked here or from the DOM
     // `internalKey` prevents any manual calls from outside
