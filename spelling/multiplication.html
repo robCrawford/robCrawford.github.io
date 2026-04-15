@@ -1,59 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta charset="utf-8" />
-  <meta http-equiv="x-ua-compatible" content="ie=edge" />
-  <title>Multiplication</title>
-  <link rel="stylesheet" href="./css/index.css" />
-  <link rel="stylesheet" href="./css/multiplication.css" />
-</head>
-<body>
-  <script>
-    const backgroundMode = localStorage.getItem('spelling-background-mode') || 'default';
-    if (backgroundMode === 'words') {
-      document.body.classList.add('words-bg');
-    } else if (backgroundMode === 'stars') {
-      document.body.classList.add('stars-bg');
-    }
-  </script>
-  <div id="word-background"></div>
-  <div id="main" class="multiplication">
-    <div id="complete-overlay"></div>
-    <div id="nav">
-      <a href='./index.html'>Spelling</a> | <b>Multiplication</b> | <a class="reset-link" title="Reset" onclick="window.promptReset('multiplication')">
-        <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-          <path d="M4.5 14.5l7.5-7.5a3 3 0 0 1 4.2 0l4.8 4.8a3 3 0 0 1 0 4.2l-5.5 5.5H9a3 3 0 0 1-2.1-.9l-2.4-2.4a3 3 0 0 1 0-4.2z" />
-          <line x1="3" y1="22" x2="21" y2="22" />
-        </svg>
+<!DOCTYPE html><html lang=en><script type=module src=multiplication.025de775.js></script><meta name=viewport content="width=device-width, initial-scale=1"><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><title>Multiplication</title><link rel=stylesheet href=spelling-test.f8022e94.css><link rel=stylesheet href=multiplication.2d04da50.css><body>
+  <script>const backgroundMode=localStorage.getItem("spelling-background-mode")||"default";"words"===backgroundMode?document.body.classList.add("words-bg"):"stars"===backgroundMode&&document.body.classList.add("stars-bg");</script>
+  <div id=word-background></div>
+  <div id=main class=multiplication>
+    <div id=complete-overlay></div>
+    <div id=nav>
+      <a href=index.html>Spelling</a> | <b>Multiplication</b> | <a class=reset-link title=Reset onclick="window.promptReset('multiplication')">
+        <svg width=16 height=16 fill=none stroke=currentColor stroke-linecap=round stroke-linejoin=round stroke-width=2 viewBox="0 0 24 24"><path d="M4.5 14.5 12 7a3 3 0 0 1 4.2 0l4.8 4.8a3 3 0 0 1 0 4.2l-5.5 5.5H9a3 3 0 0 1-2.1-.9l-2.4-2.4a3 3 0 0 1 0-4.2Z"/><line x1=3 x2=21 y1=22 y2=22 /></svg>
       </a>
     </div>
-    <h1 id="title"></h1>
-    <div id="dark-mode-toggle"></div>
-    <div id="help-icon" class="btn btn-primary tooltip" style="display: none">
-      <img src="img/emoji-sloth.png" width="60px" height="60px" />
-      <div class="balloon">
-        <div id="help-text"></div>
+    <h1 id=title></h1>
+    <div id=dark-mode-toggle></div>
+    <div id=help-icon class="btn btn-primary tooltip" style=display:none>
+      <img src=emoji-sloth.6974d8a9.png width=60px height=60px>
+      <div class=balloon>
+        <div id=help-text></div>
         <i></i>
       </div>
     </div>
-    <div id="rewards"></div>
-    <div id="table-selector" class="table-selector"></div>
-    <div id="form-fields"></div>
-    <h2 id="results-title">Result count <span>[ hide ]</span></h2>
-    <div id="results"></div>
-    <div id="results-link">[ Show results ]</div>
-    <div class="spacer"></div>
+    <div id=rewards></div>
+    <div id=table-selector class=table-selector></div>
+    <div id=form-fields></div>
+    <h2 id=results-title>Result count <span>[ hide ]</span></h2>
+    <div id=results></div>
+    <div id=results-link>[ Show results ]</div>
+    <div class=spacer></div>
   </div>
-  <script type="module" src="./multiplication.js"></script>
-</body>
-</html>
+  <script type=module src=multiplication.8a8ff6aa.js></script>
+
+
